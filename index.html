@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Badminton Smart Rotation</title>
+<title>โจ๋เรนเจอร์ On Court</title>
 
 <style>
 
@@ -19,6 +19,7 @@ padding:16px;
 h1{
 text-align:center;
 margin-bottom:20px;
+font-size:28px;
 }
 
 .card{
@@ -50,8 +51,7 @@ color:white;
 
 .start{background:#2563eb;}
 .next{background:#22c55e;}
-.save{background:#f59e0b;}
-.undo{background:#64748b;}
+.view{background:#64748b;}
 .reset{background:#ef4444;}
 
 .big{
@@ -105,7 +105,7 @@ font-size:14px;
 
 <body>
 
-<h1>🏸 Smart Badminton Rotation</h1>
+<h1>🏸 โจ๋เรนเจอร์ On Court</h1>
 
 <div class="card">
 
@@ -137,8 +137,7 @@ font-size:14px;
 
 </div>
 
-<button class="save" onclick="saveScore()">บันทึกคะแนน</button>
-<button class="undo" onclick="undoLast()">Undo รอบล่าสุด</button>
+<button class="view" onclick="viewLast()">ดูรอบก่อนหน้า</button>
 
 </div>
 
@@ -165,7 +164,6 @@ font-size:14px;
 
 let players=[]
 let played={}
-let consecutive={}
 let round=0
 let currentMatch=[]
 let history=[]
@@ -173,7 +171,7 @@ let history=[]
 function save(){
 
 localStorage.setItem("badmintonSmart",JSON.stringify({
-players,played,consecutive,round,currentMatch,history
+players,played,round,currentMatch,history
 }))
 
 }
@@ -188,7 +186,6 @@ let d=JSON.parse(data)
 
 players=d.players
 played=d.played
-consecutive=d.consecutive
 round=d.round
 currentMatch=d.currentMatch
 history=d.history || []
@@ -213,11 +210,9 @@ return
 }
 
 played={}
-consecutive={}
 
 players.forEach(p=>{
 played[p]=0
-consecutive[p]=0
 })
 
 round=0
@@ -239,65 +234,14 @@ let selected=sorted.slice(0,4)
 
 currentMatch=selected
 
-players.forEach(p=>{
-
-if(selected.includes(p)){
+selected.forEach(p=>{
 played[p]++
-consecutive[p]++
-}else{
-consecutive[p]=0
-}
-
 })
-
-updateUI()
-updateRounds()
-
-save()
-
-}
-
-function saveScore(){
-
-let sA=parseInt(scoreA.value)
-let sB=parseInt(scoreB.value)
-
-if(isNaN(sA)||isNaN(sB)){
-alert("ใส่คะแนนก่อน")
-return
-}
-
-let [a,b,c,d]=currentMatch
 
 history.unshift({
-
 round:round,
-teamA:[a,b],
-teamB:[c,d],
-scoreA:sA,
-scoreB:sB
-
-})
-
-scoreA.value=""
-scoreB.value=""
-
-updateHistory()
-
-save()
-
-}
-
-function undoLast(){
-
-if(history.length===0) return
-
-let last=history.shift()
-
-round--
-
-last.teamA.concat(last.teamB).forEach(p=>{
-played[p]--
+teamA:[selected[0],selected[1]],
+teamB:[selected[2],selected[3]]
 })
 
 updateUI()
@@ -305,6 +249,27 @@ updateRounds()
 updateHistory()
 
 save()
+
+}
+
+function viewLast(){
+
+if(history.length<2){
+
+alert("ยังไม่มีรอบก่อนหน้า")
+
+return
+
+}
+
+let last=history[1]
+
+alert(
+"รอบ "+last.round+"\n\n"+
+last.teamA[0]+" / "+last.teamA[1]+
+"\nVS\n"+
+last.teamB[0]+" / "+last.teamB[1]
+)
 
 }
 
@@ -359,11 +324,7 @@ html+=`
 
 ${h.teamA[0]} / ${h.teamA[1]}
 
-<b>${h.scoreA}</b>
-
-vs
-
-<b>${h.scoreB}</b>
+VS
 
 ${h.teamB[0]} / ${h.teamB[1]}
 
