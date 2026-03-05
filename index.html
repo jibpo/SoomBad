@@ -1,97 +1,168 @@
-
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Badminton Live Scheduler</title>
+<title>Badminton Smart Scheduler</title>
+
 <style>
-body { font-family: Arial; padding: 20px; }
-textarea { width: 200px; height: 150px; }
-button { padding: 10px; margin: 5px 5px 5px 0; }
-.round { margin-top: 20px; font-size: 20px; }
-.box { margin-top: 10px; padding: 10px; border: 1px solid #ccc; width: 300px; }
+body { font-family: Arial; padding:20px; }
+button { padding:10px; margin:5px; }
+.round { margin-top:20px; font-size:18px; }
+.box { margin-top:10px; padding:10px; border:1px solid #ccc; }
 </style>
 </head>
+
 <body>
 
-<h2>🏸 ระบบจัดคู่แบด LIVE (8 คน / 1 คอร์ท)</h2>
-<p>เงื่อนไข: ไม่ซ้ำคู่ | เล่นติดได้ไม่เกิน 2 รอบ | ทุกคนได้เล่น 4 รอบ</p>
+<h2>🏸 ระบบจัดคู่แบดอัจฉริยะ (8 คน / 1 คอร์ท)</h2>
 
-<textarea id="names">
-A
-B
-C
-D
-E
-F
-G
-H
-</textarea>
-<br>
-<button onclick="start()">เริ่ม</button>
-<button onclick="nextRound()">รอบถัดไป</button>
-<button onclick="resetAll()">รีเซ็ต</button>
+<textarea id="players" placeholder="ใส่ชื่อ 8 คน บรรทัดละ 1 คน"></textarea><br>
+<button onclick="startGame()">เริ่มใหม่</button>
+<button onclick="nextRound()">สุ่มรอบถัดไป</button>
+<button onclick="resetAll()">ล้างข้อมูลทั้งหมด</button>
 
-<div id="display" class="box"></div>
+<div class="round" id="round"></div>
+<div class="box" id="result"></div>
 
 <script>
-let schedule = [
-    [["A","H"],["B","G"]],
-    [["C","F"],["D","E"]],
-    [["A","G"],["C","E"]],
-    [["B","H"],["D","F"]],
-    [["A","F"],["B","E"]],
-    [["C","H"],["D","G"]],
-    [["A","E"],["C","G"]],
-    [["B","F"],["D","H"]]
-];
 
-let map = {};
-let currentRound = 0;
+let players = []
+let playedCount = {}
+let consecutive = {}
+let usedPairs = new Set()
+let round = 0
+let waitingPool = []
 
-function start() {
-    let players = document.getElementById("names").value.trim().split("\n");
+function saveData() {
+    localStorage.setItem("bad_data", JSON.stringify({
+        players, playedCount, consecutive, usedPairs: Array.from(usedPairs), round, waitingPool
+    }))
+}
+
+function loadData() {
+    let data = localStorage.getItem("bad_data")
+    if (data) {
+        let parsed = JSON.parse(data)
+        players = parsed.players
+        playedCount = parsed.playedCount
+        consecutive = parsed.consecutive
+        usedPairs = new Set(parsed.usedPairs)
+        round = parsed.round
+        waitingPool = parsed.waitingPool
+    }
+}
+
+loadData()
+updateUI()
+
+function startGame() {
+    players = document.getElementById("players").value.trim().split("\n")
     if (players.length !== 8) {
-        alert("กรุณาใส่ชื่อให้ครบ 8 คน");
-        return;
+        alert("ต้องมี 8 คน")
+        return
     }
-    map = {};
-    for (let i = 0; i < 8; i++) {
-        map[String.fromCharCode(65+i)] = players[i];
+
+    playedCount = {}
+    consecutive = {}
+    usedPairs = new Set()
+    waitingPool = [...players]
+    round = 0
+
+    players.forEach(p => {
+        playedCount[p] = 0
+        consecutive[p] = 0
+    })
+
+    saveData()
+    nextRound()
+}
+
+function shuffle(arr) {
+    return arr.sort(() => Math.random() - 0.5)
+}
+
+function validPair(a,b,c,d) {
+    let pairs = [
+        [a,b],[c,d]
+    ]
+    for (let [x,y] of pairs) {
+        let key = [x,y].sort().join("-")
+        if (usedPairs.has(key)) return false
     }
-    currentRound = 0;
-    showRound();
+    return true
 }
 
 function nextRound() {
-    if (currentRound < 7) {
-        currentRound++;
-        showRound();
-    } else {
-        alert("ครบ 8 รอบแล้ว 🎉");
+
+    if (players.length !== 8) {
+        alert("กดเริ่มใหม่ก่อน")
+        return
     }
+
+    round++
+
+    let selected = []
+
+    // รอบแรกต้องครบทุกคนก่อน
+    if (waitingPool.length >= 4) {
+        shuffle(waitingPool)
+        selected = waitingPool.splice(0,4)
+    } else {
+        let eligible = players.filter(p => consecutive[p] < 2)
+        shuffle(eligible)
+        selected = eligible.slice(0,4)
+    }
+
+    let found = false
+    let tries = 0
+
+    while (!found && tries < 50) {
+        shuffle(selected)
+        if (validPair(selected[0],selected[1],selected[2],selected[3])) {
+            found = true
+        }
+        tries++
+    }
+
+    if (!found) {
+        alert("หาคู่ใหม่ไม่ได้แล้ว (คู่เริ่มครบหมด)")
+        return
+    }
+
+    let p1 = selected[0]
+    let p2 = selected[1]
+    let p3 = selected[2]
+    let p4 = selected[3]
+
+    usedPairs.add([p1,p2].sort().join("-"))
+    usedPairs.add([p3,p4].sort().join("-"))
+
+    players.forEach(p => {
+        if (selected.includes(p)) {
+            playedCount[p]++
+            consecutive[p]++
+        } else {
+            consecutive[p] = 0
+        }
+    })
+
+    saveData()
+    updateUI()
+
+    document.getElementById("result").innerHTML =
+        `<b>ทีม A:</b> ${p1} & ${p2}<br>
+         <b>ทีม B:</b> ${p3} & ${p4}`
 }
 
-function showRound() {
-    let output = "<b>รอบ " + (currentRound+1) + "</b><br><br>";
-    let playing = [];
-    
-    schedule[currentRound].forEach(pair => {
-        output += map[pair[0]] + " - " + map[pair[1]] + "<br>";
-        playing.push(pair[0], pair[1]);
-    });
-
-    let resting = Object.keys(map).filter(p => !playing.includes(p));
-    output += "<br>พัก: " + resting.map(p => map[p]).join(", ");
-    
-    document.getElementById("display").innerHTML = output;
+function updateUI() {
+    document.getElementById("round").innerHTML = "รอบที่: " + round
 }
 
 function resetAll() {
-    currentRound = 0;
-    document.getElementById("display").innerHTML = "";
+    localStorage.removeItem("bad_data")
+    location.reload()
 }
-</script>
 
+</script>
 </body>
 </html>
