@@ -150,14 +150,6 @@ updateRanking()
 save()
 }
 
-function updateUI(){
-round.innerText="รอบที่ "+round
-if(currentMatch.length===4){
-teamA.innerHTML=currentMatch[0]+"<br>"+currentMatch[1]
-teamB.innerHTML=currentMatch[2]+"<br>"+currentMatch[3]
-}
-}
-
 function updateRanking(){
 
 let sorted=[...players].sort((a,b)=>{
@@ -166,6 +158,29 @@ let diffB=pointsFor[b]-pointsAgainst[b]
 let diffA=pointsFor[a]-pointsAgainst[a]
 return diffB-diffA
 })
+
+let html=""
+
+sorted.forEach((p,i)=>{
+let diff=pointsFor[p]-pointsAgainst[p]
+
+html+=`
+<div class="rank-row">
+<div>
+<b>#${i+1} ${p}</b><br>
+<small>เล่น ${played[p]} รอบ</small>
+</div>
+
+<div style="text-align:right">
+🏆 ${wins[p]} ชนะ<br>
+🎯 ${pointsFor[p]} ได้ | ❌ ${pointsAgainst[p]} เสีย | ➕ ${diff}
+</div>
+</div>
+`
+})
+
+ranking.innerHTML=html
+}
 
 let html=""
 
