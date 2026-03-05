@@ -14,7 +14,6 @@ font-family:Georgia,serif;
 background:#1f3a2e;
 color:#f4f1e8;
 padding:20px;
-background-image:linear-gradient(#1f3a2e,#14281f);
 }
 
 h1{
@@ -24,11 +23,11 @@ margin-bottom:20px;
 }
 
 .card{
-background:rgba(44,59,48,.9);
+background:#2c3b30;
 padding:18px;
 border-radius:18px;
 margin-bottom:18px;
-box-shadow:0 8px 25px rgba(0,0,0,.4);
+box-shadow:0 8px 25px rgba(0,0,0,.35);
 }
 
 textarea{
@@ -55,7 +54,6 @@ font-weight:bold;
 .start{background:#e5d6b8;}
 .next{background:#7d9a7a;color:white;}
 .reset{background:#9a3d3d;color:white;}
-
 .save{background:#b8833b;color:white;}
 .view{background:#666;color:white;}
 
@@ -79,21 +77,15 @@ margin-top:12px;
 }
 
 .score-box input{
-
 width:50%;
 height:80px;
-
 font-size:40px;
 font-weight:bold;
-
 border-radius:14px;
 border:none;
-
 text-align:center;
-
 background:#f4f1e8;
 color:#222;
-
 }
 
 .round-card{
@@ -133,12 +125,11 @@ margin-bottom:12px;
 
 </div>
 
-
 <div class="card">
 
 <div class="section-title">🏸 แมตช์ปัจจุบัน</div>
 
-<div id="round">รอบที่ 0</div>
+<div id="round">ยังไม่เริ่มเกม</div>
 
 <div class="big" id="teamA">-</div>
 
@@ -147,36 +138,24 @@ margin-bottom:12px;
 <div class="big" id="teamB">-</div>
 
 <div class="score-box">
-
 <input type="number" id="scoreA" placeholder="0">
 <input type="number" id="scoreB" placeholder="0">
-
 </div>
 
 <button class="save" onclick="saveScore()">บันทึกคะแนน</button>
-
 <button class="view" onclick="viewLast()">ดูรอบก่อนหน้า</button>
 
 </div>
 
-
 <div class="card">
-
 <div class="section-title">🎮 จำนวนรอบที่เล่น</div>
-
 <div id="roundTable"></div>
-
 </div>
-
 
 <div class="card">
-
 <div class="section-title">📜 ประวัติการแข่งขัน</div>
-
 <div id="history"></div>
-
 </div>
-
 
 <script>
 
@@ -187,11 +166,9 @@ let currentMatch=[]
 let history=[]
 
 function save(){
-
 localStorage.setItem("badmintonSmart",JSON.stringify({
 players,played,round,currentMatch,history
 }))
-
 }
 
 function load(){
@@ -206,7 +183,7 @@ players=d.players
 played=d.played
 round=d.round
 currentMatch=d.currentMatch
-history=d.history || []
+history=d.history||[]
 
 updateUI()
 updateRounds()
@@ -228,15 +205,14 @@ return
 }
 
 played={}
-
-players.forEach(p=>{
-played[p]=0
-})
+players.forEach(p=>played[p]=0)
 
 round=1
 history=[]
 
 createMatch()
+
+updateUI()
 
 save()
 
@@ -244,9 +220,16 @@ save()
 
 function nextRound(){
 
+if(players.length===0){
+alert("กรุณาเริ่มเกมก่อน")
+return
+}
+
 round++
 
 createMatch()
+
+updateUI()
 
 save()
 
@@ -318,7 +301,11 @@ last.teamB[0]+" / "+last.teamB[1]
 
 function updateUI(){
 
-round.innerText="รอบที่ "+round
+if(round===0){
+document.getElementById("round").innerText="ยังไม่เริ่มเกม"
+}else{
+document.getElementById("round").innerText="รอบที่ "+round
+}
 
 if(currentMatch.length===4){
 
@@ -338,11 +325,8 @@ players.forEach(p=>{
 html+=`
 
 <div class="round-card">
-
 <b>${p}</b><br>
-
 🎮 เล่นไปแล้ว <b>${played[p]}</b> รอบ
-
 </div>
 
 `
@@ -362,18 +346,10 @@ history.forEach(h=>{
 html+=`
 
 <div class="history-card">
-
 <b>รอบ ${h.round}</b><br>
-
-${h.teamA[0]} / ${h.teamA[1]}
-${h.scoreA ?? ""}
-
-VS
-
-${h.scoreB ?? ""}
-
-${h.teamB[0]} / ${h.teamB[1]}
-
+${h.teamA[0]} / ${h.teamA[1]} ${h.scoreA ?? ""} 
+VS 
+${h.scoreB ?? ""} ${h.teamB[0]} / ${h.teamB[1]}
 </div>
 
 `
