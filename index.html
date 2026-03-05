@@ -3,149 +3,170 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Badminton Pro Scheduler</title>
+<title>Badminton Pro</title>
 
 <style>
 body{
-    margin:0;
-    font-family:-apple-system,BlinkMacSystemFont;
-    background:linear-gradient(135deg,#1f2937,#111827);
-    color:white;
-    padding:20px;
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont;
+background:linear-gradient(180deg,#0f172a,#1e293b);
+color:white;
+padding:20px;
 }
 
 h1{
-    text-align:center;
-    font-size:32px;
-    margin-bottom:20px;
+text-align:center;
+font-size:30px;
+margin-bottom:25px;
 }
 
 .card{
-    background:#1f2937;
-    padding:25px;
-    border-radius:25px;
-    margin-bottom:20px;
-    box-shadow:0 10px 40px rgba(0,0,0,0.4);
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(10px);
+padding:20px;
+border-radius:25px;
+margin-bottom:20px;
+box-shadow:0 8px 30px rgba(0,0,0,0.4);
 }
 
 textarea{
-    width:100%;
-    height:160px;
-    font-size:22px;
-    padding:15px;
-    border-radius:18px;
-    border:none;
-    outline:none;
+width:100%;
+height:140px;
+font-size:20px;
+padding:15px;
+border-radius:15px;
+border:none;
+outline:none;
 }
 
 button{
-    width:100%;
-    padding:18px;
-    font-size:22px;
-    border:none;
-    border-radius:20px;
-    margin-top:15px;
-    font-weight:bold;
+width:100%;
+padding:18px;
+font-size:20px;
+border:none;
+border-radius:18px;
+margin-top:12px;
+font-weight:bold;
+color:white;
 }
 
-.start{ background:#2563eb; color:white; }
-.next{ background:#22c55e; color:white; }
-.reset{ background:#ef4444; color:white; }
+.start{background:#3b82f6;}
+.next{background:#22c55e;}
+.save{background:#f59e0b;}
+.reset{background:#ef4444;}
 
-.round{
-    text-align:center;
-    font-size:26px;
-    margin-bottom:20px;
-    opacity:0.8;
-}
-
-.team{
-    text-align:center;
-    margin-top:25px;
-}
-
-.team-title{
-    font-size:24px;
-    opacity:0.7;
-}
-
-.names{
-    font-size:40px;
-    font-weight:800;
-    margin-top:10px;
+.big{
+font-size:38px;
+text-align:center;
+margin:20px 0;
+font-weight:bold;
 }
 
 .vs{
-    text-align:center;
-    font-size:28px;
-    margin:25px 0;
-    opacity:0.6;
+text-align:center;
+font-size:26px;
+opacity:0.7;
 }
 
-.footer{
-    text-align:center;
-    font-size:14px;
-    opacity:0.5;
-    margin-top:10px;
+.score-box{
+display:flex;
+gap:12px;
+margin-top:10px;
+}
+
+.score-box input{
+flex:1;
+padding:15px;
+font-size:26px;
+border-radius:15px;
+border:none;
+text-align:center;
+}
+
+.rank-row{
+display:flex;
+justify-content:space-between;
+padding:12px 10px;
+margin-bottom:8px;
+border-radius:15px;
+background:rgba(255,255,255,0.06);
+font-size:18px;
+}
+
+.gold{background:#facc15;color:black;font-weight:bold;}
+.silver{background:#e5e7eb;color:black;font-weight:bold;}
+.bronze{background:#f97316;color:black;font-weight:bold;}
+
+.small{
+font-size:14px;
+opacity:0.8;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🏸 BAD SCHEDULER PRO</h1>
+<h1>🏸 Tournament PRO</h1>
 
 <div class="card">
 <textarea id="players" placeholder="ใส่ชื่อ 8 คน (บรรทัดละ 1 คน)"></textarea>
-<button class="start" onclick="startGame()">เริ่มเกมใหม่</button>
+<button class="start" onclick="startGame()">เริ่มใหม่</button>
 <button class="next" onclick="nextRound()">สุ่มรอบถัดไป</button>
 <button class="reset" onclick="resetAll()">ล้างทั้งหมด</button>
 </div>
 
 <div class="card">
-<div class="round" id="round">รอบที่ 0</div>
+<div id="round">รอบที่ 0</div>
 
-<div class="team">
-<div class="team-title">TEAM A</div>
-<div class="names" id="teamA">-</div>
-</div>
-
+<div class="big" id="teamA">-</div>
 <div class="vs">VS</div>
+<div class="big" id="teamB">-</div>
 
-<div class="team">
-<div class="team-title">TEAM B</div>
-<div class="names" id="teamB">-</div>
+<div class="score-box">
+<input type="number" id="scoreA" placeholder="แต้ม A">
+<input type="number" id="scoreB" placeholder="แต้ม B">
 </div>
 
-<div class="footer">
-ครบทุกคนก่อน 1 รอบ | ไม่ซ้ำคู่ | ไม่เกิน 2 รอบติด
+<button class="save" onclick="saveScore()">บันทึกผล</button>
 </div>
+
+<div class="card">
+<h3>🏆 ตารางคะแนน</h3>
+<div id="ranking"></div>
 </div>
 
 <script>
 
 let players=[]
+let played={}
+let wins={}
 let consecutive={}
 let usedPairs=new Set()
 let waiting=[]
 let round=0
+let currentMatch=[]
 
 function save(){
-localStorage.setItem("badPro",JSON.stringify({
-players,consecutive,usedPairs:[...usedPairs],waiting,round
+localStorage.setItem("badmintonPro",JSON.stringify({
+players,played,wins,consecutive,
+usedPairs:[...usedPairs],waiting,round,currentMatch
 }))
 }
 
 function load(){
-let data=localStorage.getItem("badPro")
+let data=localStorage.getItem("badmintonPro")
 if(data){
 let d=JSON.parse(data)
 players=d.players
+played=d.played
+wins=d.wins
 consecutive=d.consecutive
 usedPairs=new Set(d.usedPairs)
 waiting=d.waiting
 round=d.round
-updateRound()
+currentMatch=d.currentMatch
+updateUI()
+updateRanking()
 }
 }
 load()
@@ -154,12 +175,18 @@ function startGame(){
 players=document.getElementById("players").value.trim().split("\n")
 if(players.length!==8){alert("ต้องมี 8 คน");return}
 
+played={}
+wins={}
 consecutive={}
 usedPairs=new Set()
 waiting=[...players]
 round=0
 
-players.forEach(p=>consecutive[p]=0)
+players.forEach(p=>{
+played[p]=0
+wins[p]=0
+consecutive[p]=0
+})
 
 save()
 nextRound()
@@ -176,10 +203,9 @@ return !usedPairs.has(p1)&&!usedPairs.has(p2)
 }
 
 function nextRound(){
-if(players.length!==8){alert("กดเริ่มเกมก่อน");return}
+if(players.length!==8){alert("เริ่มเกมก่อน");return}
 
 round++
-
 let selected=[]
 
 if(waiting.length>=4){
@@ -198,35 +224,83 @@ if(valid(selected[0],selected[1],selected[2],selected[3])) break
 tries++
 }
 
-let a=selected[0]
-let b=selected[1]
-let c=selected[2]
-let d=selected[3]
+currentMatch=selected
 
-usedPairs.add([a,b].sort().join("-"))
-usedPairs.add([c,d].sort().join("-"))
+usedPairs.add([selected[0],selected[1]].sort().join("-"))
+usedPairs.add([selected[2],selected[3]].sort().join("-"))
 
 players.forEach(p=>{
-if(selected.includes(p)){ consecutive[p]++ }
-else{ consecutive[p]=0 }
+if(selected.includes(p)){
+played[p]++
+consecutive[p]++
+}else{
+consecutive[p]=0
+}
 })
 
-document.getElementById("teamA").innerHTML=`${a}<br>${b}`
-document.getElementById("teamB").innerHTML=`${c}<br>${d}`
-
-updateRound()
+updateUI()
+updateRanking()
 save()
 }
 
-function updateRound(){
-document.getElementById("round").innerText="รอบที่ "+round
+function saveScore(){
+let sA=parseInt(scoreA.value)
+let sB=parseInt(scoreB.value)
+
+if(isNaN(sA)||isNaN(sB)){alert("ใส่คะแนนก่อน");return}
+
+if(sA>sB){
+wins[currentMatch[0]]++
+wins[currentMatch[1]]++
+}else if(sB>sA){
+wins[currentMatch[2]]++
+wins[currentMatch[3]]++
+}
+
+scoreA.value=""
+scoreB.value=""
+
+updateRanking()
+save()
+}
+
+function updateUI(){
+round.innerText="รอบที่ "+round
+if(currentMatch.length===4){
+teamA.innerHTML=currentMatch[0]+"<br>"+currentMatch[1]
+teamB.innerHTML=currentMatch[2]+"<br>"+currentMatch[3]
+}
+}
+
+function updateRanking(){
+let sorted=[...players].sort((a,b)=>wins[b]-wins[a])
+let html=""
+
+sorted.forEach((p,i)=>{
+let medal=""
+if(i==0) medal="gold"
+if(i==1) medal="silver"
+if(i==2) medal="bronze"
+
+html+=`
+<div class="rank-row ${medal}">
+<span>#${i+1} ${p}</span>
+<span>
+ชนะ ${wins[p]} | เล่น ${played[p]} รอบ
+</span>
+</div>
+`
+})
+
+ranking.innerHTML=html
 }
 
 function resetAll(){
-localStorage.removeItem("badPro")
+localStorage.removeItem("badmintonPro")
 location.reload()
 }
 
 </script>
+
 </body>
 </html>
