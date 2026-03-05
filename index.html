@@ -10,32 +10,36 @@
 
 body{
 margin:0;
-font-family:-apple-system,BlinkMacSystemFont;
-background:#0f172a;
-color:white;
-padding:16px;
+font-family:Georgia,serif;
+background:#1f2a22;
+color:#f4f1e8;
+padding:18px;
 }
 
 h1{
 text-align:center;
-margin-bottom:20px;
-font-size:28px;
+font-size:30px;
+margin-bottom:24px;
+letter-spacing:1px;
 }
 
 .card{
-background:#1e293b;
-padding:16px;
-border-radius:16px;
-margin-bottom:16px;
+background:#2c3b30;
+padding:18px;
+border-radius:18px;
+margin-bottom:18px;
+box-shadow:0 8px 20px rgba(0,0,0,.35);
 }
 
 textarea{
 width:100%;
-height:120px;
+height:110px;
 font-size:18px;
-padding:10px;
-border-radius:10px;
+padding:12px;
+border-radius:12px;
 border:none;
+background:#f4f1e8;
+color:#222;
 }
 
 button{
@@ -43,58 +47,76 @@ width:100%;
 padding:16px;
 font-size:17px;
 border:none;
-border-radius:12px;
-margin-top:8px;
+border-radius:14px;
+margin-top:10px;
 font-weight:bold;
-color:white;
+letter-spacing:.5px;
 }
 
-.start{background:#2563eb;}
-.next{background:#22c55e;}
-.save{background:#f59e0b;}
-.view{background:#64748b;}
-.reset{background:#ef4444;}
+.start{background:#d9c9a3;}
+.next{background:#7c9a74;}
+.save{background:#b88746;color:white;}
+.view{background:#9b9b9b;color:white;}
+.reset{background:#8a3f3f;color:white;}
 
 .big{
-font-size:32px;
+font-size:34px;
 text-align:center;
-margin:16px 0;
+margin:20px 0;
 font-weight:bold;
+letter-spacing:1px;
 }
 
 .vs{
 text-align:center;
-opacity:0.7;
+font-size:18px;
+opacity:.7;
 }
 
 .score-box{
 display:flex;
-gap:10px;
+gap:12px;
+margin-top:10px;
 }
 
 .score-box input{
+
 width:50%;
-height:70px;
+height:72px;
+
 font-size:32px;
 font-weight:bold;
-border-radius:12px;
+
+border-radius:14px;
 border:none;
+
 text-align:center;
+
+background:#f4f1e8;
+color:#222;
+
 }
 
 .round-card{
-background:#334155;
-padding:12px;
-border-radius:12px;
-margin-bottom:8px;
+background:#364b3c;
+padding:14px;
+border-radius:14px;
+margin-bottom:10px;
 }
 
 .history-card{
-background:#475569;
-padding:10px;
-border-radius:10px;
-margin-bottom:8px;
-font-size:14px;
+background:#425d4b;
+padding:12px;
+border-radius:12px;
+margin-bottom:10px;
+font-size:15px;
+line-height:1.5;
+}
+
+.section-title{
+font-size:20px;
+margin-bottom:12px;
+letter-spacing:.5px;
 }
 
 </style>
@@ -117,7 +139,7 @@ font-size:14px;
 
 <div class="card">
 
-<h3>🏸 แมตช์ปัจจุบัน</h3>
+<div class="section-title">🏸 แมตช์ปัจจุบัน</div>
 
 <div id="round">รอบที่ 0</div>
 
@@ -143,7 +165,7 @@ font-size:14px;
 
 <div class="card">
 
-<h3>🎮 จำนวนรอบที่เล่น</h3>
+<div class="section-title">🎮 จำนวนรอบที่เล่น</div>
 
 <div id="roundTable"></div>
 
@@ -152,7 +174,7 @@ font-size:14px;
 
 <div class="card">
 
-<h3>📜 ประวัติการแข่งขัน</h3>
+<div class="section-title">📜 ประวัติการแข่งขัน</div>
 
 <div id="history"></div>
 
@@ -214,18 +236,26 @@ players.forEach(p=>{
 played[p]=0
 })
 
-round=0
+round=1
 history=[]
 
-save()
+createMatch()
 
-nextRound()
+save()
 
 }
 
 function nextRound(){
 
 round++
+
+createMatch()
+
+save()
+
+}
+
+function createMatch(){
 
 let sorted=[...players].sort((a,b)=>played[a]-played[b])
 
@@ -246,8 +276,6 @@ teamB:[selected[2],selected[3]]
 updateUI()
 updateRounds()
 updateHistory()
-
-save()
 
 }
 
@@ -341,7 +369,6 @@ html+=`
 <b>รอบ ${h.round}</b><br>
 
 ${h.teamA[0]} / ${h.teamA[1]}
-
 ${h.scoreA ?? ""}
 
 VS
