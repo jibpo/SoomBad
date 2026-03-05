@@ -11,24 +11,24 @@
 body{
 margin:0;
 font-family:Georgia,serif;
-background:#1f2a22;
+background:#1f3a2e;
 color:#f4f1e8;
-padding:18px;
+padding:20px;
+background-image:linear-gradient(#1f3a2e,#14281f);
 }
 
 h1{
 text-align:center;
 font-size:30px;
-margin-bottom:24px;
-letter-spacing:1px;
+margin-bottom:20px;
 }
 
 .card{
-background:#2c3b30;
+background:rgba(44,59,48,.9);
 padding:18px;
 border-radius:18px;
 margin-bottom:18px;
-box-shadow:0 8px 20px rgba(0,0,0,.35);
+box-shadow:0 8px 25px rgba(0,0,0,.4);
 }
 
 textarea{
@@ -45,46 +45,45 @@ color:#222;
 button{
 width:100%;
 padding:16px;
-font-size:17px;
+font-size:18px;
 border:none;
 border-radius:14px;
 margin-top:10px;
 font-weight:bold;
-letter-spacing:.5px;
 }
 
-.start{background:#d9c9a3;}
-.next{background:#7c9a74;}
-.save{background:#b88746;color:white;}
-.view{background:#9b9b9b;color:white;}
-.reset{background:#8a3f3f;color:white;}
+.start{background:#e5d6b8;}
+.next{background:#7d9a7a;color:white;}
+.reset{background:#9a3d3d;color:white;}
+
+.save{background:#b8833b;color:white;}
+.view{background:#666;color:white;}
 
 .big{
-font-size:34px;
+font-size:36px;
 text-align:center;
-margin:20px 0;
+margin:18px 0;
 font-weight:bold;
-letter-spacing:1px;
 }
 
 .vs{
 text-align:center;
-font-size:18px;
 opacity:.7;
+font-size:20px;
 }
 
 .score-box{
 display:flex;
-gap:12px;
-margin-top:10px;
+gap:14px;
+margin-top:12px;
 }
 
 .score-box input{
 
 width:50%;
-height:72px;
+height:80px;
 
-font-size:32px;
+font-size:40px;
 font-weight:bold;
 
 border-radius:14px;
@@ -110,13 +109,11 @@ padding:12px;
 border-radius:12px;
 margin-bottom:10px;
 font-size:15px;
-line-height:1.5;
 }
 
 .section-title{
 font-size:20px;
 margin-bottom:12px;
-letter-spacing:.5px;
 }
 
 </style>
@@ -151,8 +148,8 @@ letter-spacing:.5px;
 
 <div class="score-box">
 
-<input type="number" id="scoreA" placeholder="A">
-<input type="number" id="scoreB" placeholder="B">
+<input type="number" id="scoreA" placeholder="0">
+<input type="number" id="scoreB" placeholder="0">
 
 </div>
 
@@ -325,8 +322,8 @@ round.innerText="รอบที่ "+round
 
 if(currentMatch.length===4){
 
-teamA.innerHTML=currentMatch[0]+"<br>"+currentMatch[1]
-teamB.innerHTML=currentMatch[2]+"<br>"+currentMatch[3]
+teamA.innerHTML=currentMatch[0]+" / "+currentMatch[1]
+teamB.innerHTML=currentMatch[2]+" / "+currentMatch[3]
 
 }
 
