@@ -1,233 +1,321 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Badminton Match Maker</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Badminton Tournament Pro</title>
 
 <style>
-
 body{
+margin:0;
 font-family:-apple-system,BlinkMacSystemFont;
-background:#0f172a;
+background:linear-gradient(180deg,#0f172a,#1e293b);
 color:white;
-text-align:center;
 padding:20px;
 }
 
 h1{
-font-size:32px;
-margin-bottom:10px;
+text-align:center;
+font-size:30px;
+margin-bottom:25px;
+}
+
+.card{
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(10px);
+padding:20px;
+border-radius:25px;
+margin-bottom:20px;
+box-shadow:0 8px 30px rgba(0,0,0,0.4);
+}
+
+textarea{
+width:100%;
+height:140px;
+font-size:20px;
+padding:15px;
+border-radius:15px;
+border:none;
+outline:none;
 }
 
 button{
 width:100%;
 padding:18px;
-margin:10px 0;
-border:none;
-border-radius:16px;
 font-size:20px;
+border:none;
+border-radius:18px;
+margin-top:12px;
+font-weight:bold;
+color:white;
+}
+
+.start{background:#3b82f6;}
+.next{background:#22c55e;}
+.save{background:#f59e0b;}
+.reset{background:#ef4444;}
+
+.big{
+font-size:38px;
+text-align:center;
+margin:20px 0;
 font-weight:bold;
 }
 
-.primary{
-background:#22c55e;
-color:white;
-}
-
-.scoreBtn{
-background:#3b82f6;
-color:white;
-}
-
-.reset{
-background:#ef4444;
-color:white;
-}
-
-.card{
-background:#1e293b;
-padding:20px;
-border-radius:20px;
-margin-top:20px;
-}
-
-.team{
-font-size:26px;
-margin:10px 0;
-}
-
-input{
-width:70px;
-font-size:24px;
+.vs{
 text-align:center;
-border-radius:10px;
-border:none;
-padding:8px;
-margin:10px;
+font-size:26px;
+opacity:0.7;
 }
 
-.rank{
-text-align:left;
+.score-box{
+display:flex;
+gap:12px;
 margin-top:10px;
-font-size:18px;
 }
 
-.playerRow{
-background:#334155;
-padding:10px;
-border-radius:12px;
-margin:6px 0;
+.score-box input{
+flex:1;
+padding:15px;
+font-size:26px;
+border-radius:15px;
+border:none;
+text-align:center;
+}
+
+.rank-row{
 display:flex;
 justify-content:space-between;
+padding:12px 10px;
+margin-bottom:8px;
+border-radius:15px;
+background:rgba(255,255,255,0.06);
+font-size:16px;
 }
-
 </style>
 </head>
 
 <body>
 
-<h1>🏸 Badminton Match</h1>
-
-<button class="primary" onclick="nextMatch()">สุ่มแมตช์ใหม่</button>
+<h1>🏸 Tournament PRO</h1>
 
 <div class="card">
-<div id="match"></div>
-
-<div style="margin-top:15px">
-<input id="scoreA" placeholder="0">
-<span style="font-size:24px">:</span>
-<input id="scoreB" placeholder="0">
-</div>
-
-<button class="scoreBtn" onclick="saveScore()">บันทึกคะแนน</button>
+<textarea id="players" placeholder="ใส่ชื่อ 8 คน (บรรทัดละ 1 คน)"></textarea>
+<button class="start" onclick="startGame()">เริ่มใหม่</button>
+<button class="next" onclick="nextRound()">สุ่มรอบถัดไป</button>
+<button class="reset" onclick="resetAll()">ล้างทั้งหมด</button>
 </div>
 
 <div class="card">
-<h2>🏆 ตารางคะแนน</h2>
+<div id="round">รอบที่ 0</div>
+
+<div class="big" id="teamA">-</div>
+<div class="vs">VS</div>
+<div class="big" id="teamB">-</div>
+
+<div class="score-box">
+<input type="number" id="scoreA" placeholder="แต้ม A">
+<input type="number" id="scoreB" placeholder="แต้ม B">
+</div>
+
+<button class="save" onclick="saveScore()">บันทึกผล</button>
+</div>
+
+<div class="card">
+<h3>🏆 ตารางคะแนน</h3>
 <div id="ranking"></div>
 </div>
 
-<button class="reset" onclick="resetAll()">รีเซ็ตทั้งหมด</button>
-
 <script>
 
-let players=[
-"A","B","C","D","E","F","G","H"
-]
+let players=[]
+let played={}
+let wins={}
+let pointsFor={}
+let pointsAgainst={}
+let consecutive={}
+let usedPairs=new Set()
+let waiting=[]
+let round=0
+let currentMatch=[]
 
-let played=JSON.parse(localStorage.getItem("played"))||{}
-let wins=JSON.parse(localStorage.getItem("wins"))||{}
-let pointsFor=JSON.parse(localStorage.getItem("pf"))||{}
-let pointsAgainst=JSON.parse(localStorage.getItem("pa"))||{}
+function save(){
+localStorage.setItem("badmintonPro",JSON.stringify({
+players,played,wins,pointsFor,pointsAgainst,
+consecutive,usedPairs:[...usedPairs],waiting,round,currentMatch
+}))
+}
+
+function load(){
+let data=localStorage.getItem("badmintonPro")
+if(data){
+let d=JSON.parse(data)
+players=d.players
+played=d.played
+wins=d.wins
+pointsFor=d.pointsFor
+pointsAgainst=d.pointsAgainst
+consecutive=d.consecutive
+usedPairs=new Set(d.usedPairs)
+waiting=d.waiting
+round=d.round
+currentMatch=d.currentMatch
+updateUI()
+updateRanking()
+}
+}
+load()
+
+function startGame(){
+players=document.getElementById("players").value.trim().split("\n")
+if(players.length!==8){alert("ต้องมี 8 คน");return}
+
+played={}
+wins={}
+pointsFor={}
+pointsAgainst={}
+consecutive={}
+usedPairs=new Set()
+waiting=[...players]
+round=0
 
 players.forEach(p=>{
-played[p]=played[p]||0
-wins[p]=wins[p]||0
-pointsFor[p]=pointsFor[p]||0
-pointsAgainst[p]=pointsAgainst[p]||0
+played[p]=0
+wins[p]=0
+pointsFor[p]=0
+pointsAgainst[p]=0
+consecutive[p]=0
 })
 
-let currentMatch=null
+save()
+nextRound()
+}
 
 function shuffle(a){
 return a.sort(()=>Math.random()-0.5)
 }
 
-function nextMatch(){
+function valid(a,b,c,d){
+let p1=[a,b].sort().join("-")
+let p2=[c,d].sort().join("-")
+return !usedPairs.has(p1)&&!usedPairs.has(p2)
+}
 
-let sorted=[...players].sort((a,b)=>played[a]-played[b])
+function nextRound(){
+round++
 
-let choose=sorted.slice(0,4)
+let selected=[]
+if(waiting.length>=4){
+shuffle(waiting)
+selected=waiting.splice(0,4)
+}else{
+let eligible=players.filter(p=>consecutive[p]<2)
+shuffle(eligible)
+selected=eligible.slice(0,4)
+}
 
-shuffle(choose)
+let tries=0
+while(tries<50){
+shuffle(selected)
+if(valid(selected[0],selected[1],selected[2],selected[3])) break
+tries++
+}
 
-let teamA=[choose[0],choose[1]]
-let teamB=[choose[2],choose[3]]
+currentMatch=selected
 
-currentMatch={teamA,teamB}
+usedPairs.add([selected[0],selected[1]].sort().join("-"))
+usedPairs.add([selected[2],selected[3]].sort().join("-"))
 
-document.getElementById("match").innerHTML=`
-<div class="team">🔵 ${teamA[0]} + ${teamA[1]}</div>
-<div class="team">🔴 ${teamB[0]} + ${teamB[1]}</div>
-`
+players.forEach(p=>{
+if(selected.includes(p)){
+played[p]++
+consecutive[p]++
+}else{
+consecutive[p]=0
+}
+})
 
-document.getElementById("scoreA").value=""
-document.getElementById("scoreB").value=""
-
+updateUI()
+updateRanking()
+save()
 }
 
 function saveScore(){
+let sA=parseInt(scoreA.value)
+let sB=parseInt(scoreB.value)
 
-if(!currentMatch)return
+if(isNaN(sA)||isNaN(sB)){
+alert("ใส่คะแนนก่อน")
+return
+}
 
-let a=parseInt(scoreA.value)
-let b=parseInt(scoreB.value)
+let [a,b,c,d]=currentMatch
 
-if(isNaN(a)||isNaN(b))return
+pointsFor[a]+=sA
+pointsFor[b]+=sA
+pointsAgainst[a]+=sB
+pointsAgainst[b]+=sB
 
-let {teamA,teamB}=currentMatch
+pointsFor[c]+=sB
+pointsFor[d]+=sB
+pointsAgainst[c]+=sA
+pointsAgainst[d]+=sA
 
-teamA.forEach(p=>{
-played[p]++
-pointsFor[p]+=a
-pointsAgainst[p]+=b
-})
+if(sA>sB){
+wins[a]++
+wins[b]++
+}else if(sB>sA){
+wins[c]++
+wins[d]++
+}
 
-teamB.forEach(p=>{
-played[p]++
-pointsFor[p]+=b
-pointsAgainst[p]+=a
-})
-
-if(a>b) teamA.forEach(p=>wins[p]++)
-if(b>a) teamB.forEach(p=>wins[p]++)
-
-localStorage.setItem("played",JSON.stringify(played))
-localStorage.setItem("wins",JSON.stringify(wins))
-localStorage.setItem("pf",JSON.stringify(pointsFor))
-localStorage.setItem("pa",JSON.stringify(pointsAgainst))
+scoreA.value=""
+scoreB.value=""
 
 updateRanking()
+save()
+}
 
+function updateUI(){
+round.innerText="รอบที่ "+round
+if(currentMatch.length===4){
+teamA.innerHTML=currentMatch[0]+"<br>"+currentMatch[1]
+teamB.innerHTML=currentMatch[2]+"<br>"+currentMatch[3]
+}
 }
 
 function updateRanking(){
-
-let rank=[...players]
-
-rank.sort((a,b)=>{
-
-if(wins[b]!=wins[a]) return wins[b]-wins[a]
-
-return (pointsFor[b]-pointsAgainst[b])-(pointsFor[a]-pointsAgainst[a])
-
+let sorted=[...players].sort((a,b)=>{
+if(wins[b]!==wins[a]) return wins[b]-wins[a]
+let diffB=pointsFor[b]-pointsAgainst[b]
+let diffA=pointsFor[a]-pointsAgainst[a]
+return diffB-diffA
 })
 
 let html=""
-
-rank.forEach((p,i)=>{
-
+sorted.forEach((p,i)=>{
+let diff=pointsFor[p]-pointsAgainst[p]
 html+=`
-<div class="playerRow">
-<div>${i+1}. ${p}</div>
-<div>🏆${wins[p]} | 🎮${played[p]}</div>
+<div class="rank-row">
+<span>#${i+1} ${p}</span>
+<span>
+🏆 ${wins[p]} |
+🎯 ${pointsFor[p]} |
+❌ ${pointsAgainst[p]} |
+➕ ${diff} |
+🎮 ${played[p]}
+</span>
 </div>
 `
-
 })
 
 ranking.innerHTML=html
-
 }
 
 function resetAll(){
-
-localStorage.clear()
+localStorage.removeItem("badmintonPro")
 location.reload()
-
 }
-
-updateRanking()
 
 </script>
 
