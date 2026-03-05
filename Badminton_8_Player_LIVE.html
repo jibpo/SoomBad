@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Badminton Live Scheduler</title>
+<style>
+body { font-family: Arial; padding: 20px; }
+textarea { width: 200px; height: 150px; }
+button { padding: 10px; margin: 5px 5px 5px 0; }
+.round { margin-top: 20px; font-size: 20px; }
+.box { margin-top: 10px; padding: 10px; border: 1px solid #ccc; width: 300px; }
+</style>
+</head>
+<body>
+
+<h2>🏸 ระบบจัดคู่แบด LIVE (8 คน / 1 คอร์ท)</h2>
+<p>เงื่อนไข: ไม่ซ้ำคู่ | เล่นติดได้ไม่เกิน 2 รอบ | ทุกคนได้เล่น 4 รอบ</p>
+
+<textarea id="names">
+A
+B
+C
+D
+E
+F
+G
+H
+</textarea>
+<br>
+<button onclick="start()">เริ่ม</button>
+<button onclick="nextRound()">รอบถัดไป</button>
+<button onclick="resetAll()">รีเซ็ต</button>
+
+<div id="display" class="box"></div>
+
+<script>
+let schedule = [
+    [["A","H"],["B","G"]],
+    [["C","F"],["D","E"]],
+    [["A","G"],["C","E"]],
+    [["B","H"],["D","F"]],
+    [["A","F"],["B","E"]],
+    [["C","H"],["D","G"]],
+    [["A","E"],["C","G"]],
+    [["B","F"],["D","H"]]
+];
+
+let map = {};
+let currentRound = 0;
+
+function start() {
+    let players = document.getElementById("names").value.trim().split("\n");
+    if (players.length !== 8) {
+        alert("กรุณาใส่ชื่อให้ครบ 8 คน");
+        return;
+    }
+    map = {};
+    for (let i = 0; i < 8; i++) {
+        map[String.fromCharCode(65+i)] = players[i];
+    }
+    currentRound = 0;
+    showRound();
+}
+
+function nextRound() {
+    if (currentRound < 7) {
+        currentRound++;
+        showRound();
+    } else {
+        alert("ครบ 8 รอบแล้ว 🎉");
+    }
+}
+
+function showRound() {
+    let output = "<b>รอบ " + (currentRound+1) + "</b><br><br>";
+    let playing = [];
+    
+    schedule[currentRound].forEach(pair => {
+        output += map[pair[0]] + " - " + map[pair[1]] + "<br>";
+        playing.push(pair[0], pair[1]);
+    });
+
+    let resting = Object.keys(map).filter(p => !playing.includes(p));
+    output += "<br>พัก: " + resting.map(p => map[p]).join(", ");
+    
+    document.getElementById("display").innerHTML = output;
+}
+
+function resetAll() {
+    currentRound = 0;
+    document.getElementById("display").innerHTML = "";
+}
+</script>
+
+</body>
+</html>
