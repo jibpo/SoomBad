@@ -164,10 +164,11 @@ let played={}
 let round=0
 let currentMatch=[]
 let history=[]
+let scoreSaved=false
 
 function save(){
 localStorage.setItem("badmintonSmart",JSON.stringify({
-players,played,round,currentMatch,history
+players,played,round,currentMatch,history,scoreSaved
 }))
 }
 
@@ -184,6 +185,7 @@ played=d.played
 round=d.round
 currentMatch=d.currentMatch
 history=d.history||[]
+scoreSaved=d.scoreSaved||false
 
 updateUI()
 updateRounds()
@@ -209,6 +211,7 @@ players.forEach(p=>played[p]=0)
 
 round=1
 history=[]
+scoreSaved=false
 
 createMatch()
 
@@ -222,6 +225,11 @@ function nextRound(){
 
 if(players.length===0){
 alert("กรุณาเริ่มเกมก่อน")
+return
+}
+
+if(!scoreSaved && history.length>0){
+alert("กรุณาบันทึกคะแนนก่อนเริ่มรอบถัดไป")
 return
 }
 
@@ -253,6 +261,8 @@ teamA:[selected[0],selected[1]],
 teamB:[selected[2],selected[3]]
 })
 
+scoreSaved=false
+
 updateUI()
 updateRounds()
 updateHistory()
@@ -275,9 +285,13 @@ history[0].scoreB=sB
 scoreA.value=""
 scoreB.value=""
 
+scoreSaved=true
+
 updateHistory()
 
 save()
+
+nextRound()
 
 }
 
