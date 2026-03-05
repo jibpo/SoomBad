@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Badminton Tournament</title>
+<title>Badminton Match Board</title>
 
 <style>
 
@@ -23,8 +23,8 @@ margin-bottom:20px;
 
 .card{
 background:#1e293b;
-padding:18px;
-border-radius:18px;
+padding:16px;
+border-radius:16px;
 margin-bottom:16px;
 }
 
@@ -32,8 +32,8 @@ textarea{
 width:100%;
 height:120px;
 font-size:18px;
-padding:12px;
-border-radius:12px;
+padding:10px;
+border-radius:10px;
 border:none;
 }
 
@@ -42,7 +42,7 @@ width:100%;
 padding:16px;
 font-size:17px;
 border:none;
-border-radius:14px;
+border-radius:12px;
 margin-top:8px;
 font-weight:bold;
 color:white;
@@ -54,10 +54,10 @@ color:white;
 .reset{background:#ef4444;}
 
 .big{
-font-size:34px;
+font-size:32px;
 text-align:center;
-margin:18px 0;
-font-weight:700;
+margin:16px 0;
+font-weight:bold;
 }
 
 .vs{
@@ -68,7 +68,6 @@ opacity:0.7;
 .score-box{
 display:flex;
 gap:10px;
-width:100%;
 }
 
 .score-box input{
@@ -79,7 +78,7 @@ height:70px;
 font-size:32px;
 font-weight:bold;
 
-border-radius:16px;
+border-radius:12px;
 border:none;
 
 text-align:center;
@@ -88,34 +87,35 @@ text-align:center;
 .rank-card{
 
 background:#334155;
-padding:14px;
+padding:12px;
 
-border-radius:14px;
+border-radius:12px;
 
-margin-bottom:10px;
+margin-bottom:8px;
 
 }
 
 .rank-name{
-
 font-size:18px;
 font-weight:bold;
-
 }
 
 .rank-stats{
-
 font-size:14px;
-opacity:0.9;
-
 margin-top:6px;
-
 }
 
-.rank-medal{
+.history-card{
 
-font-size:20px;
-margin-right:6px;
+background:#475569;
+
+padding:10px;
+
+border-radius:10px;
+
+margin-bottom:8px;
+
+font-size:14px;
 
 }
 
@@ -124,20 +124,22 @@ margin-right:6px;
 
 <body>
 
-<h1>🏸 Badminton Tournament</h1>
+<h1>🏸 Badminton Board</h1>
 
 <div class="card">
 
 <textarea id="players" placeholder="ใส่ชื่อ 8 คน (บรรทัดละ 1 คน)"></textarea>
 
-<button class="start" onclick="startGame()">เริ่มใหม่</button>
-<button class="next" onclick="nextRound()">สุ่มรอบ</button>
+<button class="start" onclick="startGame()">เริ่มเกม</button>
+<button class="next" onclick="nextRound()">สุ่มรอบใหม่</button>
 <button class="reset" onclick="resetAll()">รีเซ็ต</button>
 
 </div>
 
 
 <div class="card">
+
+<h3>🏸 แมตช์ปัจจุบัน</h3>
 
 <div id="round">รอบที่ 0</div>
 
@@ -169,6 +171,15 @@ margin-right:6px;
 </div>
 
 
+<div class="card">
+
+<h3>📜 ประวัติการแข่งขัน</h3>
+
+<div id="history"></div>
+
+</div>
+
+
 <script>
 
 let players=[]
@@ -181,19 +192,21 @@ let usedPairs=new Set()
 let waiting=[]
 let round=0
 let currentMatch=[]
+let history=[]
 
 function save(){
 
-localStorage.setItem("badmintonData",JSON.stringify({
+localStorage.setItem("badmintonBoard",JSON.stringify({
 players,played,wins,pointsFor,pointsAgainst,
-consecutive,usedPairs:[...usedPairs],waiting,round,currentMatch
+consecutive,usedPairs:[...usedPairs],waiting,
+round,currentMatch,history
 }))
 
 }
 
 function load(){
 
-let data=localStorage.getItem("badmintonData")
+let data=localStorage.getItem("badmintonBoard")
 
 if(data){
 
@@ -209,9 +222,11 @@ usedPairs=new Set(d.usedPairs)
 waiting=d.waiting
 round=d.round
 currentMatch=d.currentMatch
+history=d.history || []
 
 updateUI()
 updateRanking()
+updateHistory()
 
 }
 
@@ -240,6 +255,7 @@ usedPairs=new Set()
 waiting=[...players]
 
 round=0
+history=[]
 
 players.forEach(p=>{
 
@@ -252,7 +268,6 @@ consecutive[p]=0
 })
 
 save()
-
 nextRound()
 
 }
@@ -312,14 +327,10 @@ usedPairs.add([selected[2],selected[3]].sort().join("-"))
 players.forEach(p=>{
 
 if(selected.includes(p)){
-
 played[p]++
 consecutive[p]++
-
 }else{
-
 consecutive[p]=0
-
 }
 
 })
@@ -337,10 +348,8 @@ let sA=parseInt(scoreA.value)
 let sB=parseInt(scoreB.value)
 
 if(isNaN(sA)||isNaN(sB)){
-
 alert("ใส่คะแนนก่อน")
 return
-
 }
 
 let [a,b,c,d]=currentMatch
@@ -356,21 +365,29 @@ pointsAgainst[c]+=sA
 pointsAgainst[d]+=sA
 
 if(sA>sB){
-
 wins[a]++
 wins[b]++
-
 }else if(sB>sA){
-
 wins[c]++
 wins[d]++
-
 }
+
+history.unshift({
+
+round:round,
+teamA:[a,b],
+teamB:[c,d],
+scoreA:sA,
+scoreB:sB
+
+})
 
 scoreA.value=""
 scoreB.value=""
 
 updateRanking()
+updateHistory()
+
 save()
 
 }
@@ -406,7 +423,6 @@ let html=""
 sorted.forEach((p,i)=>{
 
 let medal=""
-
 if(i==0) medal="🥇"
 if(i==1) medal="🥈"
 if(i==2) medal="🥉"
@@ -417,22 +433,13 @@ html+=`
 
 <div class="rank-card">
 
-<div class="rank-name">
-
-<span class="rank-medal">${medal}</span>
-
-#${i+1} ${p}
-
-</div>
+<div class="rank-name">${medal} #${i+1} ${p}</div>
 
 <div class="rank-stats">
 
-🏆 ชนะ ${wins[p]} |
-🎮 เล่น ${played[p]} รอบ<br>
+🏆 ชนะ ${wins[p]} | 🎮 เล่น ${played[p]} รอบ<br>
 
-🎯 ${pointsFor[p]} ได้ |
-❌ ${pointsAgainst[p]} เสีย |
-➕ ${diff}
+🎯 ${pointsFor[p]} ได้ | ❌ ${pointsAgainst[p]} เสีย | ➕ ${diff}
 
 </div>
 
@@ -446,9 +453,41 @@ ranking.innerHTML=html
 
 }
 
+function updateHistory(){
+
+let html=""
+
+history.forEach(h=>{
+
+html+=`
+
+<div class="history-card">
+
+<b>รอบ ${h.round}</b><br>
+
+${h.teamA[0]} / ${h.teamA[1]}
+
+<b>${h.scoreA}</b>
+
+vs
+
+<b>${h.scoreB}</b>
+
+${h.teamB[0]} / ${h.teamB[1]}
+
+</div>
+
+`
+
+})
+
+history.innerHTML=html
+
+}
+
 function resetAll(){
 
-localStorage.removeItem("badmintonData")
+localStorage.removeItem("badmintonBoard")
 location.reload()
 
 }
