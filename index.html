@@ -1,131 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Badminton Tournament Pro</title>
-
-<style>
-body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont;
-background:linear-gradient(180deg,#0f172a,#1e293b);
-color:white;
-padding:20px;
-}
-
-h1{
-text-align:center;
-font-size:30px;
-margin-bottom:25px;
-}
-
-.card{
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(10px);
-padding:20px;
-border-radius:25px;
-margin-bottom:20px;
-box-shadow:0 8px 30px rgba(0,0,0,0.4);
-}
-
-textarea{
-width:100%;
-height:140px;
-font-size:20px;
-padding:15px;
-border-radius:15px;
-border:none;
-outline:none;
-}
-
-button{
-width:100%;
-padding:18px;
-font-size:20px;
-border:none;
-border-radius:18px;
-margin-top:12px;
-font-weight:bold;
-color:white;
-}
-
-.start{background:#3b82f6;}
-.next{background:#22c55e;}
-.save{background:#f59e0b;}
-.reset{background:#ef4444;}
-
-.big{
-font-size:38px;
-text-align:center;
-margin:20px 0;
-font-weight:bold;
-}
-
-.vs{
-text-align:center;
-font-size:26px;
-opacity:0.7;
-}
-
-.score-box{
-display:flex;
-gap:12px;
-margin-top:10px;
-}
-
-.score-box input{
-flex:1;
-padding:15px;
-font-size:26px;
-border-radius:15px;
-border:none;
-text-align:center;
-}
-
-.rank-row{
-display:flex;
-justify-content:space-between;
-padding:12px 10px;
-margin-bottom:8px;
-border-radius:15px;
-background:rgba(255,255,255,0.06);
-font-size:16px;
-}
-</style>
-</head>
-
-<body>
-
-<h1>🏸 Tournament PRO</h1>
-
-<div class="card">
-<textarea id="players" placeholder="ใส่ชื่อ 8 คน (บรรทัดละ 1 คน)"></textarea>
-<button class="start" onclick="startGame()">เริ่มใหม่</button>
-<button class="next" onclick="nextRound()">สุ่มรอบถัดไป</button>
-<button class="reset" onclick="resetAll()">ล้างทั้งหมด</button>
-</div>
-
-<div class="card">
-<div id="round">รอบที่ 0</div>
-
-<div class="big" id="teamA">-</div>
-<div class="vs">VS</div>
-<div class="big" id="teamB">-</div>
-
-<div class="score-box">
-<input type="number" id="scoreA" placeholder="แต้ม A">
-<input type="number" id="scoreB" placeholder="แต้ม B">
-</div>
-
-<button class="save" onclick="saveScore()">บันทึกผล</button>
-</div>
-
-<div class="card">
-<h3>🏆 ตารางคะแนน</h3>
-<div id="ranking"></div>
-</div>
-
 <script>
 
 let players=[]
@@ -251,6 +123,7 @@ return
 
 let [a,b,c,d]=currentMatch
 
+// เก็บแต้ม
 pointsFor[a]+=sA
 pointsFor[b]+=sA
 pointsAgainst[a]+=sB
@@ -261,6 +134,7 @@ pointsFor[d]+=sB
 pointsAgainst[c]+=sA
 pointsAgainst[d]+=sA
 
+// เก็บชนะ
 if(sA>sB){
 wins[a]++
 wins[b]++
@@ -285,6 +159,7 @@ teamB.innerHTML=currentMatch[2]+"<br>"+currentMatch[3]
 }
 
 function updateRanking(){
+
 let sorted=[...players].sort((a,b)=>{
 if(wins[b]!==wins[a]) return wins[b]-wins[a]
 let diffB=pointsFor[b]-pointsAgainst[b]
@@ -293,6 +168,7 @@ return diffB-diffA
 })
 
 let html=""
+
 sorted.forEach((p,i)=>{
 let diff=pointsFor[p]-pointsAgainst[p]
 html+=`
@@ -302,8 +178,7 @@ html+=`
 🏆 ${wins[p]} |
 🎯 ${pointsFor[p]} |
 ❌ ${pointsAgainst[p]} |
-➕ ${diff} |
-🎮 ${played[p]}
+➕ ${diff}
 </span>
 </div>
 `
@@ -318,6 +193,3 @@ location.reload()
 }
 
 </script>
-
-</body>
-</html>
