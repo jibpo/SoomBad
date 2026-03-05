@@ -56,6 +56,7 @@ font-weight:bold;
 .reset{background:#9a3d3d;color:white;}
 .save{background:#b8833b;color:white;}
 .view{background:#666;color:white;}
+.shuffle{background:#3d6b8a;color:white;}
 
 .big{
 font-size:36px;
@@ -143,6 +144,7 @@ margin-bottom:12px;
 </div>
 
 <button class="save" onclick="saveScore()">บันทึกคะแนน</button>
+<button class="shuffle" onclick="shuffleMatch()">สุ่มใหม่</button>
 <button class="view" onclick="viewLast()">ดูรอบก่อนหน้า</button>
 
 </div>
@@ -173,28 +175,20 @@ players,played,round,currentMatch,history,scoreSaved
 }
 
 function load(){
-
 let data=localStorage.getItem("badmintonSmart")
-
 if(data){
-
 let d=JSON.parse(data)
-
 players=d.players
 played=d.played
 round=d.round
 currentMatch=d.currentMatch
 history=d.history||[]
 scoreSaved=d.scoreSaved||false
-
 updateUI()
 updateRounds()
 updateHistory()
-
 }
-
 }
-
 load()
 
 function startGame(){
@@ -234,11 +228,8 @@ return
 }
 
 round++
-
 createMatch()
-
 updateUI()
-
 save()
 
 }
@@ -266,6 +257,27 @@ scoreSaved=false
 updateUI()
 updateRounds()
 updateHistory()
+
+}
+
+function shuffleMatch(){
+
+if(scoreSaved){
+alert("บันทึกคะแนนแล้ว ไม่สามารถสุ่มใหม่ได้")
+return
+}
+
+let shuffled=[...players].sort(()=>Math.random()-0.5)
+
+currentMatch=shuffled.slice(0,4)
+
+history[0].teamA=[currentMatch[0],currentMatch[1]]
+history[0].teamB=[currentMatch[2],currentMatch[3]]
+
+updateUI()
+updateHistory()
+
+save()
 
 }
 
@@ -379,10 +391,8 @@ document.getElementById("history").innerHTML=html
 }
 
 function resetAll(){
-
 localStorage.removeItem("badmintonSmart")
 location.reload()
-
 }
 
 </script>
