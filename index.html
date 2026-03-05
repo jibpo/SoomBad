@@ -4,114 +4,119 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Badminton Tournament Pro</title>
+<title>Badminton Tournament</title>
 
 <style>
 
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont;
-background:linear-gradient(135deg,#0f172a,#1e293b,#111827);
+background:#0f172a;
 color:white;
-padding:20px;
+padding:16px;
 }
 
 h1{
 text-align:center;
-font-size:32px;
-margin-bottom:25px;
+margin-bottom:20px;
 }
 
 .card{
-background:rgba(255,255,255,0.06);
-backdrop-filter:blur(10px);
-padding:22px;
-border-radius:24px;
-margin-bottom:22px;
-box-shadow:0 10px 30px rgba(0,0,0,0.5);
+background:#1e293b;
+padding:18px;
+border-radius:18px;
+margin-bottom:16px;
 }
 
 textarea{
 width:100%;
-height:140px;
-font-size:20px;
-padding:14px;
-border-radius:14px;
+height:120px;
+font-size:18px;
+padding:12px;
+border-radius:12px;
 border:none;
-outline:none;
 }
 
 button{
 width:100%;
-padding:18px;
-font-size:18px;
+padding:16px;
+font-size:17px;
 border:none;
-border-radius:16px;
-margin-top:10px;
+border-radius:14px;
+margin-top:8px;
 font-weight:bold;
 color:white;
 }
 
-.start{background:#3b82f6;}
+.start{background:#2563eb;}
 .next{background:#22c55e;}
 .save{background:#f59e0b;}
 .reset{background:#ef4444;}
 
 .big{
-font-size:40px;
+font-size:34px;
 text-align:center;
-margin:25px 0;
-font-weight:800;
-letter-spacing:1px;
+margin:18px 0;
+font-weight:700;
 }
 
 .vs{
 text-align:center;
-font-size:22px;
-opacity:0.6;
+opacity:0.7;
 }
 
 .score-box{
 display:flex;
 gap:10px;
-margin-top:10px;
+width:100%;
 }
 
 .score-box input{
-flex:1;
-padding:14px;
-font-size:26px;
-border-radius:14px;
+
+width:50%;
+height:70px;
+
+font-size:32px;
+font-weight:bold;
+
+border-radius:16px;
 border:none;
+
 text-align:center;
 }
 
-.rank-row{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:16px;
+.rank-card{
+
+background:#334155;
+padding:14px;
+
+border-radius:14px;
+
 margin-bottom:10px;
-border-radius:16px;
-background:rgba(255,255,255,0.05);
+
 }
 
-.rank-left{
-font-size:17px;
+.rank-name{
+
+font-size:18px;
+font-weight:bold;
+
 }
 
-.rank-right{
-text-align:right;
+.rank-stats{
+
 font-size:14px;
 opacity:0.9;
+
+margin-top:6px;
+
 }
 
-.gold{background:#facc15;color:black;}
-.silver{background:#e5e7eb;color:black;}
-.bronze{background:#f97316;color:white;}
+.rank-medal{
 
-small{
-opacity:0.7;
+font-size:20px;
+margin-right:6px;
+
 }
 
 </style>
@@ -125,11 +130,12 @@ opacity:0.7;
 
 <textarea id="players" placeholder="ใส่ชื่อ 8 คน (บรรทัดละ 1 คน)"></textarea>
 
-<button class="start" onclick="startGame()">เริ่มเกมใหม่</button>
-<button class="next" onclick="nextRound()">สุ่มรอบถัดไป</button>
-<button class="reset" onclick="resetAll()">รีเซ็ตทั้งหมด</button>
+<button class="start" onclick="startGame()">เริ่มใหม่</button>
+<button class="next" onclick="nextRound()">สุ่มรอบ</button>
+<button class="reset" onclick="resetAll()">รีเซ็ต</button>
 
 </div>
+
 
 <div class="card">
 
@@ -143,14 +149,16 @@ opacity:0.7;
 
 <div class="score-box">
 
-<input type="number" id="scoreA" placeholder="แต้ม A">
-<input type="number" id="scoreB" placeholder="แต้ม B">
+<input type="number" id="scoreA" placeholder="A">
+
+<input type="number" id="scoreB" placeholder="B">
 
 </div>
 
 <button class="save" onclick="saveScore()">บันทึกคะแนน</button>
 
 </div>
+
 
 <div class="card">
 
@@ -159,6 +167,7 @@ opacity:0.7;
 <div id="ranking"></div>
 
 </div>
+
 
 <script>
 
@@ -175,7 +184,7 @@ let currentMatch=[]
 
 function save(){
 
-localStorage.setItem("badmintonPro",JSON.stringify({
+localStorage.setItem("badmintonData",JSON.stringify({
 players,played,wins,pointsFor,pointsAgainst,
 consecutive,usedPairs:[...usedPairs],waiting,round,currentMatch
 }))
@@ -184,7 +193,7 @@ consecutive,usedPairs:[...usedPairs],waiting,round,currentMatch
 
 function load(){
 
-let data=localStorage.getItem("badmintonPro")
+let data=localStorage.getItem("badmintonData")
 
 if(data){
 
@@ -217,7 +226,6 @@ players=document.getElementById("players").value.trim().split("\n")
 if(players.length!==8){
 
 alert("ต้องมี 8 คน")
-
 return
 
 }
@@ -228,24 +236,31 @@ pointsFor={}
 pointsAgainst={}
 consecutive={}
 usedPairs=new Set()
+
 waiting=[...players]
+
 round=0
 
 players.forEach(p=>{
+
 played[p]=0
 wins[p]=0
 pointsFor[p]=0
 pointsAgainst[p]=0
 consecutive[p]=0
+
 })
 
 save()
+
 nextRound()
 
 }
 
 function shuffle(a){
+
 return a.sort(()=>Math.random()-0.5)
+
 }
 
 function valid(a,b,c,d){
@@ -311,6 +326,7 @@ consecutive[p]=0
 
 updateUI()
 updateRanking()
+
 save()
 
 }
@@ -340,11 +356,15 @@ pointsAgainst[c]+=sA
 pointsAgainst[d]+=sA
 
 if(sA>sB){
+
 wins[a]++
 wins[b]++
+
 }else if(sB>sA){
+
 wins[c]++
 wins[d]++
+
 }
 
 scoreA.value=""
@@ -371,12 +391,14 @@ teamB.innerHTML=currentMatch[2]+"<br>"+currentMatch[3]
 function updateRanking(){
 
 let sorted=[...players].sort((a,b)=>{
+
 if(wins[b]!==wins[a]) return wins[b]-wins[a]
 
 let diffB=pointsFor[b]-pointsAgainst[b]
 let diffA=pointsFor[a]-pointsAgainst[a]
 
 return diffB-diffA
+
 })
 
 let html=""
@@ -385,27 +407,32 @@ sorted.forEach((p,i)=>{
 
 let medal=""
 
-if(i==0) medal="gold"
-if(i==1) medal="silver"
-if(i==2) medal="bronze"
+if(i==0) medal="🥇"
+if(i==1) medal="🥈"
+if(i==2) medal="🥉"
 
 let diff=pointsFor[p]-pointsAgainst[p]
 
 html+=`
 
-<div class="rank-row ${medal}">
+<div class="rank-card">
 
-<div class="rank-left">
+<div class="rank-name">
 
-<b>#${i+1} ${p}</b><br>
-<small>เล่น ${played[p]} รอบ</small>
+<span class="rank-medal">${medal}</span>
+
+#${i+1} ${p}
 
 </div>
 
-<div class="rank-right">
+<div class="rank-stats">
 
-🏆 ${wins[p]} ชนะ<br>
-🎯 ${pointsFor[p]} | ❌ ${pointsAgainst[p]} | ➕ ${diff}
+🏆 ชนะ ${wins[p]} |
+🎮 เล่น ${played[p]} รอบ<br>
+
+🎯 ${pointsFor[p]} ได้ |
+❌ ${pointsAgainst[p]} เสีย |
+➕ ${diff}
 
 </div>
 
@@ -421,7 +448,7 @@ ranking.innerHTML=html
 
 function resetAll(){
 
-localStorage.removeItem("badmintonPro")
+localStorage.removeItem("badmintonData")
 location.reload()
 
 }
