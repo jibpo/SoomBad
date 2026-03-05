@@ -51,6 +51,7 @@ color:white;
 
 .start{background:#2563eb;}
 .next{background:#22c55e;}
+.save{background:#f59e0b;}
 .view{background:#64748b;}
 .reset{background:#ef4444;}
 
@@ -72,16 +73,12 @@ gap:10px;
 }
 
 .score-box input{
-
 width:50%;
 height:70px;
-
 font-size:32px;
 font-weight:bold;
-
 border-radius:12px;
 border:none;
-
 text-align:center;
 }
 
@@ -136,6 +133,8 @@ font-size:14px;
 <input type="number" id="scoreB" placeholder="B">
 
 </div>
+
+<button class="save" onclick="saveScore()">บันทึกคะแนน</button>
 
 <button class="view" onclick="viewLast()">ดูรอบก่อนหน้า</button>
 
@@ -252,14 +251,33 @@ save()
 
 }
 
+function saveScore(){
+
+let sA=parseInt(scoreA.value)
+let sB=parseInt(scoreB.value)
+
+if(isNaN(sA)||isNaN(sB)){
+alert("ใส่คะแนนก่อน")
+return
+}
+
+history[0].scoreA=sA
+history[0].scoreB=sB
+
+scoreA.value=""
+scoreB.value=""
+
+updateHistory()
+
+save()
+
+}
+
 function viewLast(){
 
 if(history.length<2){
-
 alert("ยังไม่มีรอบก่อนหน้า")
-
 return
-
 }
 
 let last=history[1]
@@ -324,7 +342,11 @@ html+=`
 
 ${h.teamA[0]} / ${h.teamA[1]}
 
+${h.scoreA ?? ""}
+
 VS
+
+${h.scoreB ?? ""}
 
 ${h.teamB[0]} / ${h.teamB[1]}
 
