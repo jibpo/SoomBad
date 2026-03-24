@@ -28,6 +28,7 @@ button{width:100%;padding:14px;margin-top:10px;font-size:18px;border:none;border
 <textarea id="players" placeholder="ใส่ชื่อ (กี่คนก็ได้)"></textarea>
 <button class="start" onclick="startGame()">เริ่มใหม่</button>
 <button class="next" onclick="nextRound()">สุ่มรอบถัดไป</button>
+<button onclick="openDisplay()">โหมดโชว์หน้าคอร์ท</button>
 <button class="reset" onclick="resetAll()">ล้าง</button>
 </div>
 
@@ -57,6 +58,9 @@ button{width:100%;padding:14px;margin-top:10px;font-size:18px;border:none;border
 </div>
 
 <script>
+function openDisplay(){
+window.open("display.html","_blank")
+}
 
 // DOM
 const roundEl = document.getElementById("round")
