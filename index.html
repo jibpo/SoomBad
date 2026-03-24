@@ -3,104 +3,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Badminton PRO MAX</title>
+<title>Badminton Scheduler</title>
 
 <style>
 body{
 margin:0;
-font-family:-apple-system,BlinkMacSystemFont;
+font-family:-apple-system;
 background:#0f172a;
 color:white;
 padding:16px;
 }
-
-h1{
-text-align:center;
-font-size:28px;
-margin-bottom:15px;
-}
-
 .card{
 background:#1e293b;
 padding:16px;
-border-radius:18px;
-margin-bottom:15px;
+border-radius:16px;
+margin-bottom:12px;
 }
-
 textarea{
 width:100%;
 height:140px;
 font-size:18px;
-padding:10px;
 border-radius:12px;
+padding:10px;
 border:none;
 }
-
 button{
 width:100%;
-padding:16px;
+padding:14px;
+margin-top:10px;
 font-size:18px;
 border:none;
-border-radius:14px;
-margin-top:10px;
+border-radius:12px;
 font-weight:bold;
 }
-
 .start{background:#3b82f6;}
 .next{background:#22c55e;}
 .save{background:#f59e0b;}
 .reset{background:#ef4444;}
-
 .big{
-font-size:32px;
+font-size:30px;
 text-align:center;
 margin:10px 0;
-font-weight:bold;
 }
-
-.vs{
-text-align:center;
-font-size:22px;
-opacity:0.7;
-}
-
-.score{
-display:flex;
-gap:10px;
-margin-top:10px;
-}
-
+.vs{text-align:center;margin:10px 0;}
+.score{display:flex;gap:10px;}
 .score input{
 flex:1;
-font-size:22px;
+font-size:20px;
 padding:10px;
 border-radius:10px;
 border:none;
 text-align:center;
 }
-
 .rank{
 display:flex;
 justify-content:space-between;
-padding:10px;
-margin-top:8px;
+padding:8px;
+margin-top:6px;
 background:#334155;
 border-radius:10px;
-font-size:15px;
-align-items:center;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🏸 PRO MAX</h1>
-
 <div class="card">
 <textarea id="players" placeholder="ใส่ชื่อ (กี่คนก็ได้)"></textarea>
 <button class="start" onclick="startGame()">เริ่มใหม่</button>
 <button class="next" onclick="nextRound()">สุ่มรอบถัดไป</button>
-<button class="reset" onclick="resetAll()">ล้างทั้งหมด</button>
+<button class="reset" onclick="resetAll()">ล้าง</button>
 </div>
 
 <div class="card">
@@ -111,35 +83,34 @@ align-items:center;
 <div class="big" id="teamB">-</div>
 
 <div class="score">
-<input id="scoreA" type="number" placeholder="A">
-<input id="scoreB" type="number" placeholder="B">
+<input id="scoreA" placeholder="A" type="number">
+<input id="scoreB" placeholder="B" type="number">
 </div>
 
 <button class="save" onclick="saveScore()">บันทึกคะแนน</button>
 </div>
 
 <div class="card">
-<h3>🏆 ตารางคะแนน</h3>
 <div id="ranking"></div>
 </div>
 
 <script>
 
 let players=[]
-let played={}, wins={}, pf={}, pa={}, consecutive={}
+let played={},wins={},pf={},pa={},consecutive={}
 let usedPairs=new Set()
-let round=0
 let currentMatch=[]
+let round=0
 
 function save(){
-localStorage.setItem("bad_pro_max",JSON.stringify({
-players,played,wins,pf,pa,consecutive,usedPairs:[...usedPairs],round,currentMatch
+localStorage.setItem("bad_simple",JSON.stringify({
+players,played,wins,pf,pa,consecutive,usedPairs:[...usedPairs],currentMatch,round
 }))
 }
 
 function load(){
-let d=JSON.parse(localStorage.getItem("bad_pro_max")||"null")
-if(!d) return
+let d=JSON.parse(localStorage.getItem("bad_simple")||"null")
+if(!d)return
 players=d.players
 played=d.played
 wins=d.wins
@@ -147,8 +118,8 @@ pf=d.pf
 pa=d.pa
 consecutive=d.consecutive
 usedPairs=new Set(d.usedPairs)
-round=d.round
 currentMatch=d.currentMatch
+round=d.round
 updateUI()
 updateRank()
 }
@@ -156,7 +127,8 @@ load()
 
 function startGame(){
 players=document.getElementById("players").value.trim().split("\n").filter(x=>x)
-if(players.length<4){alert("อย่างน้อย 4 คน");return}
+
+if(players.length<4){alert("ต้องมีอย่างน้อย 4 คน");return}
 
 played={},wins={},pf={},pa={},consecutive={}
 usedPairs=new Set()
@@ -170,42 +142,37 @@ pa[p]=0
 consecutive[p]=0
 })
 
-save()
 nextRound()
 }
 
-function shuffle(a){ return a.sort(()=>Math.random()-0.5) }
+function shuffle(a){return a.sort(()=>Math.random()-0.5)}
 
 function valid(a,b,c,d){
 return !usedPairs.has([a,b].sort().join("-")) &&
        !usedPairs.has([c,d].sort().join("-"))
 }
 
+// ⭐ ตัวสำคัญ: เลือกคนแบบเดิม แต่แฟร์ขึ้น
 function pickPlayers(){
 
 let eligible = players.filter(p=>consecutive[p]<2)
 
-// เรียงคนเล่นน้อยสุดก่อน
+// เรียงจากเล่นน้อย → มาก
 eligible.sort((a,b)=>played[a]-played[b])
 
+// เอา top 6 มาสุ่ม
 let pool = eligible.slice(0,Math.min(6,eligible.length))
 
-let tries=0
-while(tries<100){
-
+for(let i=0;i<50;i++){
 let s = shuffle([...pool]).slice(0,4)
-
 if(valid(s[0],s[1],s[2],s[3])) return s
-
-tries++
 }
 
+// fallback
 return pool.slice(0,4)
 }
 
 function nextRound(){
-
-if(players.length<4){alert("เริ่มเกมก่อน");return}
 
 round++
 
@@ -255,13 +222,12 @@ save()
 }
 
 function updateUI(){
-roundEl.innerText="รอบที่ "+round
+round.innerText="รอบที่ "+round
 teamA.innerHTML=currentMatch[0]+"<br>"+currentMatch[1]
 teamB.innerHTML=currentMatch[2]+"<br>"+currentMatch[3]
 }
 
 function updateRank(){
-
 let sorted=[...players].sort((a,b)=>{
 if(wins[b]!=wins[a]) return wins[b]-wins[a]
 return (pf[b]-pa[b])-(pf[a]-pa[a])
@@ -270,13 +236,13 @@ return (pf[b]-pa[b])-(pf[a]-pa[a])
 ranking.innerHTML=sorted.map((p,i)=>`
 <div class="rank">
 <span>#${i+1} ${p}</span>
-<span>🏆${wins[p]} | 🎮${played[p]} | ➕${pf[p]-pa[p]}</span>
+<span>🏆${wins[p]} | 🎮${played[p]}</span>
 </div>
 `).join("")
 }
 
 function resetAll(){
-localStorage.removeItem("bad_pro_max")
+localStorage.removeItem("bad_simple")
 location.reload()
 }
 
