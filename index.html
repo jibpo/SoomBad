@@ -110,7 +110,7 @@ color:#374151;
 <textarea id="players" placeholder="ใส่ชื่อ (กี่คนก็ได้)"></textarea>
 <button class="start" onclick="startGame()">เริ่มใหม่</button>
 <button class="next" onclick="nextRound()">สุ่มรอบถัดไป</button>
-<button onclick="openDisplay()">โหมดโชว์หน้าคอร์ท</button>
+<button onclick="openScoreboard()">เริ่มแข่ง (Scoreboard)</button>
 <button class="reset" onclick="resetAll()">ล้าง</button>
 </div>
 
@@ -140,8 +140,8 @@ color:#374151;
 </div>
 
 <script>
-function openDisplay(){
-window.open("display.html","_blank")
+function openScoreboard(){
+window.open("scoreboard.html","_blank")
 }
 
 // DOM
