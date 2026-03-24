@@ -121,18 +121,33 @@ function pickPlayers(){
 
 let eligible = players.filter(p=>consecutive[p]<2)
 
+// ถ้าน้อยเกิน → เอาทุกคน
+if(eligible.length < 4){
+    eligible = [...players]
+}
+
+// เรียงจากเล่นน้อยสุด
 eligible.sort((a,b)=>played[a]-played[b])
 
 let pool = eligible.slice(0,Math.min(6,eligible.length))
 
-// พยายามไม่ซ้ำ
-for(let i=0;i<50;i++){
-let s = shuffle([...pool]).slice(0,4)
-if(valid(s[0],s[1],s[2],s[3])) return s
+// กันเคส pool < 4
+if(pool.length < 4){
+    pool = [...players]
 }
 
-// fallback: ยอมซ้ำ
-return shuffle([...pool]).slice(0,4)
+// พยายามไม่ซ้ำ
+for(let i=0;i<50;i++){
+    let s = shuffle([...pool]).slice(0,4)
+    if(s.length === 4 && valid(s[0],s[1],s[2],s[3])){
+        return s
+    }
+}
+
+// fallback (ยอมซ้ำ)
+let fallback = shuffle([...players]).slice(0,4)
+
+return fallback
 }
 
 function nextRound(){
@@ -185,23 +200,17 @@ save()
 }
 
 function updateUI(){
-roundEl.innerText="รอบที่ "+round
-teamAEl.innerHTML=currentMatch[0]+"<br>"+currentMatch[1]
-teamBEl.innerHTML=currentMatch[2]+"<br>"+currentMatch[3]
+
+if(currentMatch.length < 4){
+    teamAEl.innerHTML = "-"
+    teamBEl.innerHTML = "-"
+    return
 }
 
-function updateRank(){
-let sorted=[...players].sort((a,b)=>{
-if(wins[b]!=wins[a]) return wins[b]-wins[a]
-return (pf[b]-pa[b])-(pf[a]-pa[a])
-})
+roundEl.innerText="รอบที่ "+round
 
-rankingEl.innerHTML=sorted.map((p,i)=>`
-<div class="rank">
-<span>#${i+1} ${p}</span>
-<span>🏆${wins[p]} | 🎮${played[p]}</span>
-</div>
-`).join("")
+teamAEl.innerHTML=currentMatch[0]+"<br>"+currentMatch[1]
+teamBEl.innerHTML=currentMatch[2]+"<br>"+currentMatch[3]
 }
 
 function resetAll(){
