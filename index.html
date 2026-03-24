@@ -3,260 +3,179 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Badminton Match</title>
+<title>Scoreboard</title>
 
 <style>
 body{
 margin:0;
 font-family:-apple-system;
-background:#f5f7fa;
-color:#111827;
-padding:16px;
+height:100vh;
+display:flex;
+flex-direction:column;
 }
 
-.card{
-background:white;
-padding:16px;
-border-radius:16px;
-margin-bottom:12px;
-box-shadow:0 4px 12px rgba(0,0,0,0.05);
+/* ทีม A */
+.teamA{
+flex:1;
+background:#ef4444;
+color:white;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
 }
 
-textarea{
-width:100%;
-height:120px;
-font-size:16px;
-border-radius:12px;
-padding:10px;
-border:1px solid #e5e7eb;
-}
-
-button{
-width:100%;
-padding:14px;
-margin-top:10px;
-font-size:16px;
-border:none;
-border-radius:12px;
-font-weight:600;
+/* ทีม B */
+.teamB{
+flex:1;
 background:#3b82f6;
 color:white;
-}
-
-.big{
-font-size:28px;
-text-align:center;
-margin:10px 0;
-font-weight:600;
-}
-
-.vs{
-text-align:center;
-color:#9ca3af;
-margin:8px 0;
-}
-
-.rank{
 display:flex;
-justify-content:space-between;
-padding:10px;
-margin-top:6px;
-background:#f9fafb;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+}
+
+.name{
+font-size:36px;
+margin-bottom:10px;
+}
+
+.score{
+font-size:120px;
+font-weight:bold;
+}
+
+/* ปุ่มจบเกม */
+.finish{
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+background:black;
+color:white;
+padding:12px 20px;
 border-radius:10px;
+z-index:10;
 }
 </style>
+
 </head>
 
 <body>
 
-<div class="card">
-<textarea id="players" placeholder="ใส่ชื่อ (บรรทัดละ 1 คน)"></textarea>
-
-<button onclick="startGame()">เริ่มใหม่</button>
-<button onclick="nextRound()">สุ่มรอบถัดไป</button>
-<button onclick="resetAll()">รีเซ็ตทั้งหมด</button>
+<div class="teamA" id="areaA">
+<div class="name" id="nameA"></div>
+<div class="score" id="scoreA">0</div>
 </div>
 
-<div class="card">
-<div id="round">รอบที่ 0</div>
-
-<div class="big" id="teamA">-</div>
-<div class="vs">VS</div>
-<div class="big" id="teamB">-</div>
-
-<button onclick="openScoreboard()">เริ่มแข่ง</button>
+<div class="teamB" id="areaB">
+<div class="name" id="nameB"></div>
+<div class="score" id="scoreB">0</div>
 </div>
 
-<div class="card">
-<h3>🏆 ตารางคะแนน</h3>
-<div id="ranking"></div>
-</div>
-
-<div class="card">
-<h3>📜 ประวัติการแข่งขัน</h3>
-<div id="history"></div>
-</div>
+<div class="finish" onclick="finishMatch()">จบเกม</div>
 
 <script>
 
-const roundEl = document.getElementById("round")
-const teamAEl = document.getElementById("teamA")
-const teamBEl = document.getElementById("teamB")
-const rankingEl = document.getElementById("ranking")
-const historyEl = document.getElementById("history")
+let scoreA = 0
+let scoreB = 0
+let match = []
 
-let players=[]
-let played={},wins={},pf={},pa={},consecutive={}
-let usedPairs=new Set()
-let currentMatch=[]
-let round=0
-let history=[]
+function loadMatch(){
 
-function save(){
-localStorage.setItem("bad_full",JSON.stringify({
-players,played,wins,pf,pa,consecutive,
-usedPairs:[...usedPairs],currentMatch,round,history
-}))
+let d = JSON.parse(localStorage.getItem("bad_full") || "null")
+if(!d) return
+
+match = d.currentMatch || []
+
+if(match.length === 4){
+document.getElementById("nameA").innerText = match[0] + " " + match[1]
+document.getElementById("nameB").innerText = match[2] + " " + match[3]
+}
 }
 
-function load(){
-let d=JSON.parse(localStorage.getItem("bad_full")||"null")
-if(!d)return
-players=d.players
-played=d.played
-wins=d.wins
-pf=d.pf
-pa=d.pa
-consecutive=d.consecutive
-usedPairs=new Set(d.usedPairs)
-currentMatch=d.currentMatch
-round=d.round
-history=d.history||[]
-updateUI()
-updateRank()
-updateHistory()
-}
-load()
-
-function startGame(){
-players=document.getElementById("players").value.trim().split("\n").filter(x=>x)
-
-if(players.length<4){alert("ต้องมีอย่างน้อย 4 คน");return}
-
-played={},wins={},pf={},pa={},consecutive={}
-usedPairs=new Set()
-history=[]
-round=0
-
-players.forEach(p=>{
-played[p]=0
-wins[p]=0
-pf[p]=0
-pa[p]=0
-consecutive[p]=0
+// ⭐ ใช้ event แยก ไม่ใช้ click รวม
+document.getElementById("areaA").addEventListener("click",(e)=>{
+handleTap("A", e)
 })
 
-nextRound()
-}
+document.getElementById("areaB").addEventListener("click",(e)=>{
+handleTap("B", e)
+})
 
-function shuffle(a){return a.sort(()=>Math.random()-0.5)}
+function handleTap(team, e){
 
-function valid(a,b,c,d){
-return !usedPairs.has([a,b].sort().join("-")) &&
-       !usedPairs.has([c,d].sort().join("-"))
-}
+let w = window.innerWidth
+let x = e.clientX
 
-function pickPlayers(){
-
-let eligible = players.filter(p=>consecutive[p]<2)
-if(eligible.length<4) eligible=[...players]
-
-eligible.sort((a,b)=>played[a]-played[b])
-
-let pool = eligible.slice(0,Math.min(6,eligible.length))
-if(pool.length<4) pool=[...players]
-
-for(let i=0;i<50;i++){
-let s = shuffle([...pool]).slice(0,4)
-if(s.length===4 && valid(s[0],s[1],s[2],s[3])) return s
-}
-
-return shuffle([...players]).slice(0,4)
-}
-
-function nextRound(){
-round++
-let s = pickPlayers()
-currentMatch=s
-
-if(s.length<4)return
-
-usedPairs.add([s[0],s[1]].sort().join("-"))
-usedPairs.add([s[2],s[3]].sort().join("-"))
-
-players.forEach(p=>{
-if(s.includes(p)){
-played[p]++
-consecutive[p]++
+if(team === "A"){
+    if(x > w/2){
+        scoreA++
+    }else{
+        scoreA = Math.max(0, scoreA - 1)
+    }
 }else{
-consecutive[p]=0
+    if(x > w/2){
+        scoreB++
+    }else{
+        scoreB = Math.max(0, scoreB - 1)
+    }
 }
-})
 
 updateUI()
-updateRank()
-save()
-}
-
-function openScoreboard(){
-window.open("scoreboard.html","_blank")
-}
-
-function resetAll(){
-localStorage.removeItem("bad_full")
-location.reload()
 }
 
 function updateUI(){
-if(currentMatch.length<4){
-teamAEl.innerHTML="-"
-teamBEl.innerHTML="-"
-return
-}
-roundEl.innerText="รอบที่ "+round
-teamAEl.innerHTML=currentMatch[0]+"<br>"+currentMatch[1]
-teamBEl.innerHTML=currentMatch[2]+"<br>"+currentMatch[3]
+document.getElementById("scoreA").innerText = scoreA
+document.getElementById("scoreB").innerText = scoreB
 }
 
-function updateRank(){
-let sorted=[...players].sort((a,b)=>{
-if(wins[b]!=wins[a]) return wins[b]-wins[a]
-return (pf[b]-pa[b])-(pf[a]-pa[a])
+function finishMatch(){
+
+let d = JSON.parse(localStorage.getItem("bad_full") || "null")
+if(!d) return
+
+if(!d.history) d.history = []
+if(!d.pf) d.pf = {}
+if(!d.pa) d.pa = {}
+if(!d.wins) d.wins = {}
+
+let [a,b,c,d2] = match
+
+d.pf[a]+=scoreA
+d.pf[b]+=scoreA
+d.pa[a]+=scoreB
+d.pa[b]+=scoreB
+
+d.pf[c]+=scoreB
+d.pf[d2]+=scoreB
+d.pa[c]+=scoreA
+d.pa[d2]+=scoreA
+
+if(scoreA > scoreB){
+d.wins[a]++
+d.wins[b]++
+}else{
+d.wins[c]++
+d.wins[d2]++
+}
+
+d.history.push({
+round:d.round,
+teamA:[a,b],
+teamB:[c,d2],
+scoreA:scoreA,
+scoreB:scoreB
 })
 
-rankingEl.innerHTML=sorted.map((p,i)=>`
-<div class="rank">
-<span>#${i+1} ${p}</span>
-<span>🏆${wins[p]} | 🎮${played[p]}</span>
-</div>
-`).join("")
+localStorage.setItem("bad_full", JSON.stringify(d))
+
+alert("บันทึกเรียบร้อย")
+window.close()
 }
 
-function updateHistory(){
-historyEl.innerHTML = history.map(h=>`
-<div class="rank">
-<div>
-รอบ ${h.round}<br>
-${h.teamA[0]} & ${h.teamA[1]}<br>
-vs<br>
-${h.teamB[0]} & ${h.teamB[1]}
-</div>
-<div>
-${h.scoreA} - ${h.scoreB}
-</div>
-</div>
-`).reverse().join("")
-}
+loadMatch()
 
 </script>
 
