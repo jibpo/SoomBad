@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Scoreboard</title>
+
+<style>
+body{
+margin:0;
+font-family:-apple-system;
+height:100vh;
+display:flex;
+flex-direction:column;
+}
+
+/* ทีม A */
+.teamA{
+flex:1;
+background:#ef4444;
+color:white;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+}
+
+/* ทีม B */
+.teamB{
+flex:1;
+background:#3b82f6;
+color:white;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+}
+
+.name{
+font-size:36px;
+margin-bottom:10px;
+}
+
+.score{
+font-size:120px;
+font-weight:bold;
+}
+
+/* ปุ่ม */
+.overlay{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+display:flex;
+gap:20px;
+}
+
+.btn{
+width:70px;
+height:70px;
+border-radius:50%;
+background:white;
+color:black;
+font-size:30px;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+/* ปุ่มจบเกม */
+.finish{
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+background:black;
+color:white;
+padding:12px 20px;
+border-radius:10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="teamA">
+<div class="name" id="nameA"></div>
+<div class="score" id="scoreA">0</div>
+</div>
+
+<div class="teamB">
+<div class="name" id="nameB"></div>
+<div class="score" id="scoreB">0</div>
+</div>
+
+<div class="overlay">
+<div class="btn" onclick="addScore('A')">+</div>
+<div class="btn" onclick="addScore('B')">+</div>
+</div>
+
+<div class="finish" onclick="finishMatch()">จบเกม</div>
+
+<script>
+
+let scoreA = 0
+let scoreB = 0
+let match = []
+
+function loadMatch(){
+
+let d = JSON.parse(localStorage.getItem("bad_full") || "null")
+if(!d) return
+
+match = d.currentMatch || []
+
+if(match.length === 4){
+document.getElementById("nameA").innerText = match[0] + " " + match[1]
+document.getElementById("nameB").innerText = match[2] + " " + match[3]
+}
+}
+
+function addScore(team){
+if(team==="A") scoreA++
+else scoreB++
+updateUI()
+}
+
+function updateUI(){
+document.getElementById("scoreA").innerText = scoreA
+document.getElementById("scoreB").innerText = scoreB
+}
+
+function finishMatch(){
+
+let d = JSON.parse(localStorage.getItem("bad_full") || "null")
+if(!d) return
+
+let [a,b,c,d2] = match
+
+// แต้ม
+d.pf[a]+=scoreA
+d.pf[b]+=scoreA
+d.pa[a]+=scoreB
+d.pa[b]+=scoreB
+
+d.pf[c]+=scoreB
+d.pf[d2]+=scoreB
+d.pa[c]+=scoreA
+d.pa[d2]+=scoreA
+
+// ชนะ
+if(scoreA > scoreB){
+d.wins[a]++
+d.wins[b]++
+}else{
+d.wins[c]++
+d.wins[d2]++
+}
+
+// history
+d.history.push({
+round:d.round,
+teamA:[a,b],
+teamB:[c,d2],
+scoreA:scoreA,
+scoreB:scoreB
+})
+
+localStorage.setItem("bad_full", JSON.stringify(d))
+
+alert("บันทึกเรียบร้อย")
+window.close()
+}
+
+loadMatch()
+
+</script>
+
+</body>
+</html>
