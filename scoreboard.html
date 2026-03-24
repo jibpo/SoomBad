@@ -56,6 +56,7 @@ background:black;
 color:white;
 padding:12px 20px;
 border-radius:10px;
+z-index:10;
 }
 </style>
 
@@ -63,12 +64,12 @@ border-radius:10px;
 
 <body>
 
-<div class="teamA">
+<div class="teamA" id="areaA">
 <div class="name" id="nameA"></div>
 <div class="score" id="scoreA">0</div>
 </div>
 
-<div class="teamB">
+<div class="teamB" id="areaB">
 <div class="name" id="nameB"></div>
 <div class="score" id="scoreB">0</div>
 </div>
@@ -81,7 +82,6 @@ let scoreA = 0
 let scoreB = 0
 let match = []
 
-// โหลดชื่อทีม
 function loadMatch(){
 
 let d = JSON.parse(localStorage.getItem("bad_full") || "null")
@@ -95,65 +95,54 @@ document.getElementById("nameB").innerText = match[2] + " " + match[3]
 }
 }
 
-// flash ตอนกด
-function flash(){
-document.body.style.opacity = 0.7
-setTimeout(()=>{
-document.body.style.opacity = 1
-},100)
-}
+// ⭐ ใช้ event แยก ไม่ใช้ click รวม
+document.getElementById("areaA").addEventListener("click",(e)=>{
+handleTap("A", e)
+})
 
-// อัปเดต UI
-function updateUI(){
-document.getElementById("scoreA").innerText = scoreA
-document.getElementById("scoreB").innerText = scoreB
-}
+document.getElementById("areaB").addEventListener("click",(e)=>{
+handleTap("B", e)
+})
 
-// 👆 กดหน้าจอทั้งหมด
-document.addEventListener("click", handleTap)
+function handleTap(team, e){
 
-function handleTap(e){
-
-let h = window.innerHeight
 let w = window.innerWidth
-
 let x = e.clientX
-let y = e.clientY
 
-// ทีม A (บน)
-if(y < h/2){
-
+if(team === "A"){
     if(x > w/2){
         scoreA++
     }else{
         scoreA = Math.max(0, scoreA - 1)
     }
-
-}
-// ทีม B (ล่าง)
-else{
-
+}else{
     if(x > w/2){
         scoreB++
     }else{
         scoreB = Math.max(0, scoreB - 1)
     }
-
 }
 
 updateUI()
-flash()
 }
 
-// 🏆 จบเกม
+function updateUI(){
+document.getElementById("scoreA").innerText = scoreA
+document.getElementById("scoreB").innerText = scoreB
+}
+
 function finishMatch(){
 
 let d = JSON.parse(localStorage.getItem("bad_full") || "null")
 if(!d) return
+
 if(!d.history) d.history = []
+if(!d.pf) d.pf = {}
+if(!d.pa) d.pa = {}
+if(!d.wins) d.wins = {}
+
 let [a,b,c,d2] = match
 
-// แต้ม
 d.pf[a]+=scoreA
 d.pf[b]+=scoreA
 d.pa[a]+=scoreB
@@ -164,7 +153,6 @@ d.pf[d2]+=scoreB
 d.pa[c]+=scoreA
 d.pa[d2]+=scoreA
 
-// ชนะ
 if(scoreA > scoreB){
 d.wins[a]++
 d.wins[b]++
@@ -173,16 +161,7 @@ d.wins[c]++
 d.wins[d2]++
 }
 
-// history
-// ✅ FIX กันพัง
-if(!d.history) d.history = []
 d.history.push({
-round:d.round,
-teamA:[a,b],
-teamB:[c,d2],
-scoreA:scoreA,
-scoreB:scoreB
-})
 round:d.round,
 teamA:[a,b],
 teamB:[c,d2],
