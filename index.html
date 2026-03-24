@@ -3,305 +3,280 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Badminton Queue</title>
+<title>Badminton PRO MAX</title>
 
 <style>
-
 body{
-font-family:Arial;
-background:#1f3a2e;
-color:white;
-padding:20px;
 margin:0;
+font-family:-apple-system,BlinkMacSystemFont;
+background:#0f172a;
+color:white;
+padding:16px;
 }
 
 h1{
 text-align:center;
+font-size:28px;
+margin-bottom:15px;
 }
 
 .card{
-background:#2c3b30;
-padding:20px;
-border-radius:14px;
-margin-bottom:20px;
+background:#1e293b;
+padding:16px;
+border-radius:18px;
+margin-bottom:15px;
 }
 
 textarea{
 width:100%;
-height:120px;
+height:140px;
 font-size:18px;
-border-radius:10px;
 padding:10px;
+border-radius:12px;
+border:none;
 }
 
 button{
 width:100%;
-padding:14px;
-margin-top:10px;
+padding:16px;
+font-size:18px;
 border:none;
-border-radius:10px;
-font-size:16px;
-cursor:pointer;
+border-radius:14px;
+margin-top:10px;
+font-weight:bold;
 }
 
-.start{background:#e6d3a3;}
-.next{background:#6d9c6a;color:white;}
-.save{background:#c07a2a;color:white;}
-.shuffle{background:#3b82f6;color:white;}
-.reset{background:#a53c3c;color:white;}
-.view{background:#777;color:white;}
+.start{background:#3b82f6;}
+.next{background:#22c55e;}
+.save{background:#f59e0b;}
+.reset{background:#ef4444;}
 
 .big{
 font-size:32px;
 text-align:center;
-margin:12px;
+margin:10px 0;
+font-weight:bold;
 }
 
 .vs{
 text-align:center;
-font-size:20px;
+font-size:22px;
+opacity:0.7;
 }
 
 .score{
 display:flex;
 gap:10px;
+margin-top:10px;
 }
 
 .score input{
-width:50%;
-height:60px;
-font-size:30px;
-text-align:center;
-border-radius:10px;
-border:none;
-}
-
-.history{
-background:#3a5245;
+flex:1;
+font-size:22px;
 padding:10px;
 border-radius:10px;
-margin-top:6px;
+border:none;
+text-align:center;
 }
 
+.rank{
+display:flex;
+justify-content:space-between;
+padding:10px;
+margin-top:8px;
+background:#334155;
+border-radius:10px;
+font-size:15px;
+align-items:center;
+}
 </style>
 </head>
 
 <body>
 
-<h1>🏸 โจ๋เรนเจอร์ On Court</h1>
+<h1>🏸 PRO MAX</h1>
 
 <div class="card">
-
-<textarea id="players" placeholder="ใส่ชื่อ 8 คน (บรรทัดละ 1 คน)"></textarea>
-
-<button class="start" onclick="startGame()">เริ่มเกม</button>
-<button class="next" onclick="nextRound()">รอบถัดไป</button>
-<button class="reset" onclick="resetAll()">รีเซ็ต</button>
-
+<textarea id="players" placeholder="ใส่ชื่อ (กี่คนก็ได้)"></textarea>
+<button class="start" onclick="startGame()">เริ่มใหม่</button>
+<button class="next" onclick="nextRound()">สุ่มรอบถัดไป</button>
+<button class="reset" onclick="resetAll()">ล้างทั้งหมด</button>
 </div>
 
 <div class="card">
-
-<div id="round">ยังไม่เริ่มเกม</div>
+<div id="round">รอบที่ 0</div>
 
 <div class="big" id="teamA">-</div>
-
 <div class="vs">VS</div>
-
 <div class="big" id="teamB">-</div>
 
 <div class="score">
-<input id="scoreA" type="number" placeholder="0">
-<input id="scoreB" type="number" placeholder="0">
+<input id="scoreA" type="number" placeholder="A">
+<input id="scoreB" type="number" placeholder="B">
 </div>
 
 <button class="save" onclick="saveScore()">บันทึกคะแนน</button>
-
-<button class="shuffle" onclick="shuffleMatch()">🎲 สุ่มทีมใหม่</button>
-
-<button class="view" onclick="viewLast()">ดูรอบก่อนหน้า</button>
-
 </div>
 
 <div class="card">
-<h3>🎮 จำนวนรอบที่เล่น</h3>
-<div id="roundTable"></div>
-</div>
-
-<div class="card">
-<h3>📜 ประวัติการแข่งขัน</h3>
-<div id="history"></div>
+<h3>🏆 ตารางคะแนน</h3>
+<div id="ranking"></div>
 </div>
 
 <script>
 
 let players=[]
-let played={}
+let played={}, wins={}, pf={}, pa={}, consecutive={}
+let usedPairs=new Set()
 let round=0
 let currentMatch=[]
-let history=[]
-let scoreSaved=false
 
-function startGame(){
-
-players=document.getElementById("players").value.trim().split("\n")
-
-if(players.length!=8){
-alert("ต้องมี 8 คน")
-return
+function save(){
+localStorage.setItem("bad_pro_max",JSON.stringify({
+players,played,wins,pf,pa,consecutive,usedPairs:[...usedPairs],round,currentMatch
+}))
 }
 
-played={}
-players.forEach(p=>played[p]=0)
+function load(){
+let d=JSON.parse(localStorage.getItem("bad_pro_max")||"null")
+if(!d) return
+players=d.players
+played=d.played
+wins=d.wins
+pf=d.pf
+pa=d.pa
+consecutive=d.consecutive
+usedPairs=new Set(d.usedPairs)
+round=d.round
+currentMatch=d.currentMatch
+updateUI()
+updateRank()
+}
+load()
 
-round=1
-history=[]
-scoreSaved=false
+function startGame(){
+players=document.getElementById("players").value.trim().split("\n").filter(x=>x)
+if(players.length<4){alert("อย่างน้อย 4 คน");return}
 
-createMatch()
+played={},wins={},pf={},pa={},consecutive={}
+usedPairs=new Set()
+round=0
 
+players.forEach(p=>{
+played[p]=0
+wins[p]=0
+pf[p]=0
+pa[p]=0
+consecutive[p]=0
+})
+
+save()
+nextRound()
+}
+
+function shuffle(a){ return a.sort(()=>Math.random()-0.5) }
+
+function valid(a,b,c,d){
+return !usedPairs.has([a,b].sort().join("-")) &&
+       !usedPairs.has([c,d].sort().join("-"))
+}
+
+function pickPlayers(){
+
+let eligible = players.filter(p=>consecutive[p]<2)
+
+// เรียงคนเล่นน้อยสุดก่อน
+eligible.sort((a,b)=>played[a]-played[b])
+
+let pool = eligible.slice(0,Math.min(6,eligible.length))
+
+let tries=0
+while(tries<100){
+
+let s = shuffle([...pool]).slice(0,4)
+
+if(valid(s[0],s[1],s[2],s[3])) return s
+
+tries++
+}
+
+return pool.slice(0,4)
 }
 
 function nextRound(){
 
-if(!scoreSaved && history.length>0){
-alert("ต้องบันทึกคะแนนก่อน")
-return
-}
+if(players.length<4){alert("เริ่มเกมก่อน");return}
 
 round++
-createMatch()
 
+let s = pickPlayers()
+currentMatch = s
+
+usedPairs.add([s[0],s[1]].sort().join("-"))
+usedPairs.add([s[2],s[3]].sort().join("-"))
+
+players.forEach(p=>{
+if(s.includes(p)){
+played[p]++
+consecutive[p]++
+}else{
+consecutive[p]=0
 }
-
-function createMatch(){
-
-let sorted=[...players].sort((a,b)=>played[a]-played[b])
-
-let selected=sorted.slice(0,4)
-
-currentMatch=selected
-
-selected.forEach(p=>played[p]++)
-
-history.unshift({
-round:round,
-teamA:[selected[0],selected[1]],
-teamB:[selected[2],selected[3]]
 })
 
-scoreSaved=false
-
 updateUI()
-updateRounds()
-updateHistory()
-
-}
-
-function shuffleMatch(){
-
-if(currentMatch.length<4)return
-
-let shuffled=[...currentMatch].sort(()=>Math.random()-0.5)
-
-currentMatch=shuffled
-
-history[0].teamA=[shuffled[0],shuffled[1]]
-history[0].teamB=[shuffled[2],shuffled[3]]
-
-updateUI()
-updateHistory()
-
+updateRank()
+save()
 }
 
 function saveScore(){
 
-let sA=parseInt(scoreA.value)
-let sB=parseInt(scoreB.value)
+let A=parseInt(scoreA.value)
+let B=parseInt(scoreB.value)
 
-if(isNaN(sA)||isNaN(sB)){
-alert("ใส่คะแนนก่อน")
-return
-}
+if(isNaN(A)||isNaN(B)){alert("ใส่คะแนน");return}
 
-history[0].scoreA=sA
-history[0].scoreB=sB
+let [a,b,c,d]=currentMatch
 
-scoreSaved=true
+pf[a]+=A; pf[b]+=A
+pa[a]+=B; pa[b]+=B
+
+pf[c]+=B; pf[d]+=B
+pa[c]+=A; pa[d]+=A
+
+if(A>B){wins[a]++;wins[b]++}
+else if(B>A){wins[c]++;wins[d]++}
 
 scoreA.value=""
 scoreB.value=""
 
-updateHistory()
-
-}
-
-function viewLast(){
-
-if(history.length<2){
-alert("ยังไม่มีรอบก่อนหน้า")
-return
-}
-
-let h=history[1]
-
-alert(
-"รอบ "+h.round+"\n\n"+
-h.teamA[0]+" / "+h.teamA[1]+
-"\nVS\n"+
-h.teamB[0]+" / "+h.teamB[1]
-)
-
+updateRank()
+save()
 }
 
 function updateUI(){
-
-document.getElementById("round").innerText="รอบที่ "+round
-
-if(currentMatch.length==4){
-
-document.getElementById("teamA").innerHTML=currentMatch[0]+" / "+currentMatch[1]
-document.getElementById("teamB").innerHTML=currentMatch[2]+" / "+currentMatch[3]
-
+roundEl.innerText="รอบที่ "+round
+teamA.innerHTML=currentMatch[0]+"<br>"+currentMatch[1]
+teamB.innerHTML=currentMatch[2]+"<br>"+currentMatch[3]
 }
 
-}
+function updateRank(){
 
-function updateRounds(){
-
-let html=""
-
-players.forEach(p=>{
-html+=p+" เล่น "+played[p]+" รอบ<br>"
+let sorted=[...players].sort((a,b)=>{
+if(wins[b]!=wins[a]) return wins[b]-wins[a]
+return (pf[b]-pa[b])-(pf[a]-pa[a])
 })
 
-document.getElementById("roundTable").innerHTML=html
-
-}
-
-function updateHistory(){
-
-let html=""
-
-history.forEach(h=>{
-
-html+=`
-<div class="history">
-รอบ ${h.round}<br>
-${h.teamA[0]} / ${h.teamA[1]} ${h.scoreA ?? ""} 
-VS 
-${h.scoreB ?? ""} ${h.teamB[0]} / ${h.teamB[1]}
+ranking.innerHTML=sorted.map((p,i)=>`
+<div class="rank">
+<span>#${i+1} ${p}</span>
+<span>🏆${wins[p]} | 🎮${played[p]} | ➕${pf[p]-pa[p]}</span>
 </div>
-`
-
-})
-
-document.getElementById("history").innerHTML=html
-
+`).join("")
 }
 
 function resetAll(){
+localStorage.removeItem("bad_pro_max")
 location.reload()
 }
 
