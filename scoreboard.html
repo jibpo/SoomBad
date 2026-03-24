@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Scoreboard</title>
 
 <style>
@@ -47,28 +46,6 @@ font-size:120px;
 font-weight:bold;
 }
 
-/* ปุ่ม */
-.overlay{
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-display:flex;
-gap:20px;
-}
-
-.btn{
-width:70px;
-height:70px;
-border-radius:50%;
-background:white;
-color:black;
-font-size:30px;
-display:flex;
-justify-content:center;
-align-items:center;
-}
-
 /* ปุ่มจบเกม */
 .finish{
 position:fixed;
@@ -96,11 +73,6 @@ border-radius:10px;
 <div class="score" id="scoreB">0</div>
 </div>
 
-<div class="overlay">
-<div class="btn" onclick="addScore('A')">+</div>
-<div class="btn" onclick="addScore('B')">+</div>
-</div>
-
 <div class="finish" onclick="finishMatch()">จบเกม</div>
 
 <script>
@@ -109,6 +81,7 @@ let scoreA = 0
 let scoreB = 0
 let match = []
 
+// โหลดชื่อทีม
 function loadMatch(){
 
 let d = JSON.parse(localStorage.getItem("bad_full") || "null")
@@ -122,17 +95,57 @@ document.getElementById("nameB").innerText = match[2] + " " + match[3]
 }
 }
 
-function addScore(team){
-if(team==="A") scoreA++
-else scoreB++
-updateUI()
+// flash ตอนกด
+function flash(){
+document.body.style.opacity = 0.7
+setTimeout(()=>{
+document.body.style.opacity = 1
+},100)
 }
 
+// อัปเดต UI
 function updateUI(){
 document.getElementById("scoreA").innerText = scoreA
 document.getElementById("scoreB").innerText = scoreB
 }
 
+// 👆 กดหน้าจอทั้งหมด
+document.addEventListener("click", handleTap)
+
+function handleTap(e){
+
+let h = window.innerHeight
+let w = window.innerWidth
+
+let x = e.clientX
+let y = e.clientY
+
+// ทีม A (บน)
+if(y < h/2){
+
+    if(x > w/2){
+        scoreA++
+    }else{
+        scoreA = Math.max(0, scoreA - 1)
+    }
+
+}
+// ทีม B (ล่าง)
+else{
+
+    if(x > w/2){
+        scoreB++
+    }else{
+        scoreB = Math.max(0, scoreB - 1)
+    }
+
+}
+
+updateUI()
+flash()
+}
+
+// 🏆 จบเกม
 function finishMatch(){
 
 let d = JSON.parse(localStorage.getItem("bad_full") || "null")
