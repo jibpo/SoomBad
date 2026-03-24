@@ -50,7 +50,14 @@ button{width:100%;padding:14px;margin-top:10px;font-size:18px;border:none;border
 <div id="ranking"></div>
 </div>
 
+<div class="card">
+<h3>📜 ประวัติการแข่งขัน</h3>
+<div id="history"></div>
+</div>
+       
 <script>
+
+let history = []
 
 // ✅ FIX undefined (สำคัญมาก)
 const roundEl = document.getElementById("round")
@@ -67,10 +74,11 @@ let currentMatch=[]
 let round=0
 
 function save(){
-localStorage.setItem("bad_infinite",JSON.stringify({
-players,played,wins,pf,pa,consecutive,usedPairs:[...usedPairs],currentMatch,round
+localStorage.setItem("bad_final", JSON.stringify({
+players,played,wins,pf,pa,consecutive,
+usedPairs:[...usedPairs],currentMatch,round,
+history
 }))
-}
 
 function load(){
 let d=JSON.parse(localStorage.getItem("bad_infinite")||"null")
@@ -84,10 +92,12 @@ consecutive=d.consecutive
 usedPairs=new Set(d.usedPairs)
 currentMatch=d.currentMatch
 round=d.round
+history = d.history || []
 updateUI()
 updateRank()
 }
 load()
+updateHistory()
 
 function startGame(){
 players=document.getElementById("players").value.trim().split("\n").filter(x=>x)
@@ -182,6 +192,13 @@ let B=parseInt(scoreBEl.value)
 if(isNaN(A)||isNaN(B)){alert("ใส่คะแนน");return}
 
 let [a,b,c,d]=currentMatch
+history.push({
+round: round,
+teamA: [a,b],
+teamB: [c,d],
+scoreA: A,
+scoreB: B
+})
 
 pf[a]+=A; pf[b]+=A
 pa[a]+=B; pa[b]+=B
@@ -198,6 +215,8 @@ scoreBEl.value=""
 updateRank()
 save()
 }
+
+updateHistory()
 
 function updateUI(){
 
@@ -219,6 +238,24 @@ location.reload()
 }
 
 </script>
+const historyEl = document.getElementById("history")
 
+function updateHistory(){
+
+historyEl.innerHTML = history.map(h=>`
+<div class="rank">
+<div>
+รอบ ${h.round}<br>
+${h.teamA[0]} & ${h.teamA[1]}<br>
+vs<br>
+${h.teamB[0]} & ${h.teamB[1]}
+</div>
+<div>
+${h.scoreA} - ${h.scoreB}
+</div>
+</div>
+`).reverse().join("")
+}
+       
 </body>
 </html>
