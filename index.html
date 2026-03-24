@@ -52,6 +52,14 @@ button{width:100%;padding:14px;margin-top:10px;font-size:18px;border:none;border
 
 <script>
 
+// ✅ FIX undefined (สำคัญมาก)
+const roundEl = document.getElementById("round")
+const teamAEl = document.getElementById("teamA")
+const teamBEl = document.getElementById("teamB")
+const rankingEl = document.getElementById("ranking")
+const scoreAEl = document.getElementById("scoreA")
+const scoreBEl = document.getElementById("scoreB")
+
 let players=[]
 let played={},wins={},pf={},pa={},consecutive={}
 let usedPairs=new Set()
@@ -108,12 +116,11 @@ return !usedPairs.has([a,b].sort().join("-")) &&
        !usedPairs.has([c,d].sort().join("-"))
 }
 
-// ⭐ รองรับ infinite
+// ⭐ infinite + fair
 function pickPlayers(){
 
 let eligible = players.filter(p=>consecutive[p]<2)
 
-// เรียงจากเล่นน้อย → มาก
 eligible.sort((a,b)=>played[a]-played[b])
 
 let pool = eligible.slice(0,Math.min(6,eligible.length))
@@ -124,7 +131,7 @@ let s = shuffle([...pool]).slice(0,4)
 if(valid(s[0],s[1],s[2],s[3])) return s
 }
 
-// 🔥 fallback: ยอมซ้ำได้
+// fallback: ยอมซ้ำ
 return shuffle([...pool]).slice(0,4)
 }
 
@@ -154,8 +161,8 @@ save()
 
 function saveScore(){
 
-let A=parseInt(scoreA.value)
-let B=parseInt(scoreB.value)
+let A=parseInt(scoreAEl.value)
+let B=parseInt(scoreBEl.value)
 
 if(isNaN(A)||isNaN(B)){alert("ใส่คะแนน");return}
 
@@ -170,17 +177,17 @@ pa[c]+=A; pa[d]+=A
 if(A>B){wins[a]++;wins[b]++}
 else if(B>A){wins[c]++;wins[d]++}
 
-scoreA.value=""
-scoreB.value=""
+scoreAEl.value=""
+scoreBEl.value=""
 
 updateRank()
 save()
 }
 
 function updateUI(){
-round.innerText="รอบที่ "+round
-teamA.innerHTML=currentMatch[0]+"<br>"+currentMatch[1]
-teamB.innerHTML=currentMatch[2]+"<br>"+currentMatch[3]
+roundEl.innerText="รอบที่ "+round
+teamAEl.innerHTML=currentMatch[0]+"<br>"+currentMatch[1]
+teamBEl.innerHTML=currentMatch[2]+"<br>"+currentMatch[3]
 }
 
 function updateRank(){
@@ -189,7 +196,7 @@ if(wins[b]!=wins[a]) return wins[b]-wins[a]
 return (pf[b]-pa[b])-(pf[a]-pa[a])
 })
 
-ranking.innerHTML=sorted.map((p,i)=>`
+rankingEl.innerHTML=sorted.map((p,i)=>`
 <div class="rank">
 <span>#${i+1} ${p}</span>
 <span>🏆${wins[p]} | 🎮${played[p]}</span>
