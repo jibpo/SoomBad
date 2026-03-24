@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Badminton Infinite</title>
+<title>Badminton Pro History</title>
 
 <style>
 body{margin:0;font-family:-apple-system;background:#0f172a;color:white;padding:16px;}
@@ -47,6 +47,7 @@ button{width:100%;padding:14px;margin-top:10px;font-size:18px;border:none;border
 </div>
 
 <div class="card">
+<h3>🏆 ตารางคะแนน</h3>
 <div id="ranking"></div>
 </div>
 
@@ -54,34 +55,36 @@ button{width:100%;padding:14px;margin-top:10px;font-size:18px;border:none;border
 <h3>📜 ประวัติการแข่งขัน</h3>
 <div id="history"></div>
 </div>
-       
+
 <script>
 
-let history = []
-
-// ✅ FIX undefined (สำคัญมาก)
+// DOM
 const roundEl = document.getElementById("round")
 const teamAEl = document.getElementById("teamA")
 const teamBEl = document.getElementById("teamB")
 const rankingEl = document.getElementById("ranking")
 const scoreAEl = document.getElementById("scoreA")
 const scoreBEl = document.getElementById("scoreB")
+const historyEl = document.getElementById("history")
 
+// DATA
 let players=[]
 let played={},wins={},pf={},pa={},consecutive={}
 let usedPairs=new Set()
 let currentMatch=[]
 let round=0
+let history=[]
 
+// SAVE / LOAD
 function save(){
-localStorage.setItem("bad_final", JSON.stringify({
+localStorage.setItem("bad_full", JSON.stringify({
 players,played,wins,pf,pa,consecutive,
-usedPairs:[...usedPairs],currentMatch,round,
-history
+usedPairs:[...usedPairs],currentMatch,round,history
 }))
+}
 
 function load(){
-let d=JSON.parse(localStorage.getItem("bad_infinite")||"null")
+let d=JSON.parse(localStorage.getItem("bad_full")||"null")
 if(!d)return
 players=d.players
 played=d.played
@@ -92,13 +95,14 @@ consecutive=d.consecutive
 usedPairs=new Set(d.usedPairs)
 currentMatch=d.currentMatch
 round=d.round
-history = d.history || []
+history=d.history || []
 updateUI()
 updateRank()
+updateHistory()
 }
 load()
-updateHistory()
 
+// START
 function startGame(){
 players=document.getElementById("players").value.trim().split("\n").filter(x=>x)
 
@@ -106,6 +110,7 @@ if(players.length<4){alert("ต้องมีอย่างน้อย 4 ค�
 
 played={},wins={},pf={},pa={},consecutive={}
 usedPairs=new Set()
+history=[]
 round=0
 
 players.forEach(p=>{
@@ -119,6 +124,7 @@ consecutive[p]=0
 nextRound()
 }
 
+// LOGIC
 function shuffle(a){return a.sort(()=>Math.random()-0.5)}
 
 function valid(a,b,c,d){
@@ -126,46 +132,36 @@ return !usedPairs.has([a,b].sort().join("-")) &&
        !usedPairs.has([c,d].sort().join("-"))
 }
 
-// ⭐ infinite + fair
 function pickPlayers(){
 
 let eligible = players.filter(p=>consecutive[p]<2)
 
-// ถ้าน้อยเกิน → เอาทุกคน
-if(eligible.length < 4){
-    eligible = [...players]
-}
+if(eligible.length < 4) eligible = [...players]
 
-// เรียงจากเล่นน้อยสุด
 eligible.sort((a,b)=>played[a]-played[b])
 
 let pool = eligible.slice(0,Math.min(6,eligible.length))
+if(pool.length < 4) pool = [...players]
 
-// กันเคส pool < 4
-if(pool.length < 4){
-    pool = [...players]
-}
-
-// พยายามไม่ซ้ำ
+// try no-duplicate
 for(let i=0;i<50;i++){
-    let s = shuffle([...pool]).slice(0,4)
-    if(s.length === 4 && valid(s[0],s[1],s[2],s[3])){
-        return s
-    }
+let s = shuffle([...pool]).slice(0,4)
+if(s.length===4 && valid(s[0],s[1],s[2],s[3])) return s
 }
 
-// fallback (ยอมซ้ำ)
-let fallback = shuffle([...players]).slice(0,4)
-
-return fallback
+// fallback
+return shuffle([...players]).slice(0,4)
 }
 
+// NEXT ROUND
 function nextRound(){
 
 round++
 
 let s = pickPlayers()
 currentMatch = s
+
+if(s.length<4) return
 
 usedPairs.add([s[0],s[1]].sort().join("-"))
 usedPairs.add([s[2],s[3]].sort().join("-"))
@@ -184,14 +180,27 @@ updateRank()
 save()
 }
 
+// SAVE SCORE + HISTORY
 function saveScore(){
 
 let A=parseInt(scoreAEl.value)
 let B=parseInt(scoreBEl.value)
 
-if(isNaN(A)||isNaN(B)){alert("ใส่คะแนน");return}
+if(isNaN(A)||isNaN(B)) return
 
 let [a,b,c,d]=currentMatch
+if(!a||!b||!c||!d) return
+
+// score
+pf[a]+=A; pf[b]+=A
+pa[a]+=B; pa[b]+=B
+pf[c]+=B; pf[d]+=B
+pa[c]+=A; pa[d]+=A
+
+if(A>B){wins[a]++;wins[b]++}
+else if(B>A){wins[c]++;wins[d]++}
+
+// history
 history.push({
 round: round,
 teamA: [a,b],
@@ -200,45 +209,41 @@ scoreA: A,
 scoreB: B
 })
 
-pf[a]+=A; pf[b]+=A
-pa[a]+=B; pa[b]+=B
-
-pf[c]+=B; pf[d]+=B
-pa[c]+=A; pa[d]+=A
-
-if(A>B){wins[a]++;wins[b]++}
-else if(B>A){wins[c]++;wins[d]++}
-
 scoreAEl.value=""
 scoreBEl.value=""
 
 updateRank()
+updateHistory()
 save()
 }
 
-updateHistory()
-
+// UI
 function updateUI(){
 
-if(currentMatch.length < 4){
-    teamAEl.innerHTML = "-"
-    teamBEl.innerHTML = "-"
-    return
+if(currentMatch.length<4){
+teamAEl.innerHTML="-"
+teamBEl.innerHTML="-"
+return
 }
 
 roundEl.innerText="รอบที่ "+round
-
 teamAEl.innerHTML=currentMatch[0]+"<br>"+currentMatch[1]
 teamBEl.innerHTML=currentMatch[2]+"<br>"+currentMatch[3]
 }
 
-function resetAll(){
-localStorage.removeItem("bad_infinite")
-location.reload()
-}
+function updateRank(){
+let sorted=[...players].sort((a,b)=>{
+if(wins[b]!=wins[a]) return wins[b]-wins[a]
+return (pf[b]-pa[b])-(pf[a]-pa[a])
+})
 
-</script>
-const historyEl = document.getElementById("history")
+rankingEl.innerHTML=sorted.map((p,i)=>`
+<div class="rank">
+<span>#${i+1} ${p}</span>
+<span>🏆${wins[p]} | 🎮${played[p]}</span>
+</div>
+`).join("")
+}
 
 function updateHistory(){
 
@@ -256,6 +261,14 @@ ${h.scoreA} - ${h.scoreB}
 </div>
 `).reverse().join("")
 }
-       
+
+// RESET
+function resetAll(){
+localStorage.removeItem("bad_full")
+location.reload()
+}
+
+</script>
+
 </body>
 </html>
