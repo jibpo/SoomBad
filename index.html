@@ -6,6 +6,64 @@
 <title>Badminton Match</title>
 
 <style>
+body{
+margin:0;
+font-family:-apple-system;
+background:#f5f7fa;
+color:#111827;
+padding:16px;
+}
+
+.card{
+background:white;
+padding:16px;
+border-radius:16px;
+margin-bottom:12px;
+box-shadow:0 4px 12px rgba(0,0,0,0.05);
+}
+
+textarea{
+width:100%;
+height:120px;
+font-size:16px;
+border-radius:12px;
+padding:10px;
+border:1px solid #e5e7eb;
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:10px;
+font-size:16px;
+border:none;
+border-radius:12px;
+font-weight:600;
+background:#3b82f6;
+color:white;
+}
+
+.big{
+font-size:28px;
+text-align:center;
+margin:10px 0;
+font-weight:600;
+}
+
+.vs{
+text-align:center;
+color:#9ca3af;
+margin:8px 0;
+}
+
+.rank{
+display:flex;
+justify-content:space-between;
+padding:10px;
+margin-top:6px;
+background:#f9fafb;
+border-radius:10px;
+}
 /* 🏆 ตารางคะแนน */
 .rank{
 display:flex;
@@ -222,32 +280,58 @@ teamBEl.innerHTML=currentMatch[2]+"<br>"+currentMatch[3]
 }
 
 function updateRank(){
+
 let sorted=[...players].sort((a,b)=>{
 if(wins[b]!=wins[a]) return wins[b]-wins[a]
 return (pf[b]-pa[b])-(pf[a]-pa[a])
 })
 
-rankingEl.innerHTML=sorted.map((p,i)=>`
-<div class="rank">
-<span>#${i+1} ${p}</span>
-<span>🏆${wins[p]} | 🎮${played[p]}</span>
+rankingEl.innerHTML=sorted.map((p,i)=>{
+
+let cls = "rank"
+if(i===0) cls+=" top1"
+if(i===1) cls+=" top2"
+if(i===2) cls+=" top3"
+
+return `
+<div class="${cls}">
+<div class="rank-left">#${i+1} ${p}</div>
+<div class="rank-right">
+🏆 ${wins[p]}<br>
+🎮 ${played[p]}
 </div>
-`).join("")
+</div>
+`
+}).join("")
 }
 
 function updateHistory(){
+function updateHistory(){
+
 historyEl.innerHTML = history.map(h=>`
-<div class="rank">
-<div>
-รอบ ${h.round}<br>
-${h.teamA[0]} & ${h.teamA[1]}<br>
-vs<br>
+
+<div class="history-card">
+
+<div class="history-round">
+รอบ ${h.round}
+</div>
+
+<div class="history-team">
+${h.teamA[0]} & ${h.teamA[1]}
+</div>
+
+<div style="text-align:center; margin:6px 0;">vs</div>
+
+<div class="history-team">
 ${h.teamB[0]} & ${h.teamB[1]}
 </div>
-<div>
+
+<div class="history-score">
 ${h.scoreA} - ${h.scoreB}
 </div>
+
 </div>
+
 `).reverse().join("")
 }
 
