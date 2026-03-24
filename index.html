@@ -110,18 +110,20 @@ color:#374151;
 <textarea id="players" placeholder="ใส่ชื่อ (กี่คนก็ได้)"></textarea>
 <button class="start" onclick="startGame()">เริ่มใหม่</button>
 <button class="next" onclick="nextRound()">สุ่มรอบถัดไป</button>
-<button onclick="openScoreboard()">เริ่มแข่ง (Scoreboard)</button>
+<button class="next" onclick="openScoreboard()">เริ่มแข่ง</button>
 <button class="reset" onclick="resetAll()">ล้าง</button>
 </div>
 
 <div class="card">
+
 <div id="round">รอบที่ 0</div>
 
 <div class="big" id="teamA">-</div>
 <div class="vs">VS</div>
 <div class="big" id="teamB">-</div>
 
-<button onclick="openScoreboard()">เริ่มแข่ง</button>
+<button class="next" onclick="openScoreboard()">เริ่มแข่ง</button>
+
 </div>
 
 <div class="card">
