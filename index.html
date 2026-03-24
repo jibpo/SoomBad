@@ -6,63 +6,56 @@
 <title>Badminton Match</title>
 
 <style>
-body{
-margin:0;
-font-family:-apple-system;
-background:#f5f7fa;
-color:#111827;
-padding:16px;
-}
-
-.card{
-background:white;
-padding:16px;
-border-radius:16px;
-margin-bottom:12px;
-box-shadow:0 4px 12px rgba(0,0,0,0.05);
-}
-
-textarea{
-width:100%;
-height:120px;
-font-size:16px;
-border-radius:12px;
-padding:10px;
-border:1px solid #e5e7eb;
-}
-
-button{
-width:100%;
-padding:14px;
-margin-top:10px;
-font-size:16px;
-border:none;
-border-radius:12px;
-font-weight:600;
-background:#3b82f6;
-color:white;
-}
-
-.big{
-font-size:28px;
-text-align:center;
-margin:10px 0;
-font-weight:600;
-}
-
-.vs{
-text-align:center;
-color:#9ca3af;
-margin:8px 0;
-}
-
+/* 🏆 ตารางคะแนน */
 .rank{
 display:flex;
 justify-content:space-between;
-padding:10px;
-margin-top:6px;
-background:#f9fafb;
-border-radius:10px;
+align-items:center;
+padding:12px;
+margin-top:8px;
+background:white;
+border-radius:12px;
+border:1px solid #e5e7eb;
+}
+
+.rank-left{
+font-weight:600;
+font-size:16px;
+}
+
+.rank-right{
+font-size:14px;
+color:#6b7280;
+}
+
+/* 🥇 Top 3 */
+.rank.top1{ background:#fef9c3; }
+.rank.top2{ background:#e5e7eb; }
+.rank.top3{ background:#fde68a; }
+
+/* 📜 history */
+.history-card{
+background:white;
+border-radius:12px;
+padding:12px;
+margin-top:10px;
+border:1px solid #e5e7eb;
+}
+
+.history-round{
+font-size:13px;
+color:#9ca3af;
+margin-bottom:6px;
+}
+
+.history-team{
+font-weight:600;
+}
+
+.history-score{
+font-size:18px;
+font-weight:bold;
+text-align:right;
 }
 </style>
 </head>
