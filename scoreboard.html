@@ -174,7 +174,15 @@ d.wins[d2]++
 }
 
 // history
+// ✅ FIX กันพัง
+if(!d.history) d.history = []
 d.history.push({
+round:d.round,
+teamA:[a,b],
+teamB:[c,d2],
+scoreA:scoreA,
+scoreB:scoreB
+})
 round:d.round,
 teamA:[a,b],
 teamB:[c,d2],
