@@ -160,15 +160,23 @@ let eligible = players.filter(p=>consecutive[p]<2)
 // เรียงจากเล่นน้อย → มาก
 eligible.sort((a,b)=>played[a]-played[b])
 
-// เอา top 6 มาสุ่ม
 let pool = eligible.slice(0,Math.min(6,eligible.length))
 
+// 🔥 พยายามไม่ซ้ำคู่ก่อน
 for(let i=0;i<50;i++){
-let s = shuffle([...pool]).slice(0,4)
-if(valid(s[0],s[1],s[2],s[3])) return s
+    let s = shuffle([...pool]).slice(0,4)
+    if(valid(s[0],s[1],s[2],s[3])){
+        return s
+    }
 }
 
-// fallback
+// 🔥 fallback: ยอมซ้ำคู่ได้
+for(let i=0;i<20;i++){
+    let s = shuffle([...pool]).slice(0,4)
+    return s
+}
+
+// fallback สุดท้าย
 return pool.slice(0,4)
 }
 
