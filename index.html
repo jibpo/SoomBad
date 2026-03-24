@@ -121,12 +121,7 @@ color:#374151;
 <div class="vs">VS</div>
 <div class="big" id="teamB">-</div>
 
-<div class="score">
-<input id="scoreA" placeholder="A" type="number">
-<input id="scoreB" placeholder="B" type="number">
-</div>
-
-<button class="save" onclick="saveScore()">บันทึกคะแนน</button>
+<button onclick="openScoreboard()">เริ่มแข่ง</button>
 </div>
 
 <div class="card">
@@ -149,8 +144,6 @@ const roundEl = document.getElementById("round")
 const teamAEl = document.getElementById("teamA")
 const teamBEl = document.getElementById("teamB")
 const rankingEl = document.getElementById("ranking")
-const scoreAEl = document.getElementById("scoreA")
-const scoreBEl = document.getElementById("scoreB")
 const historyEl = document.getElementById("history")
 
 // DATA
@@ -267,41 +260,6 @@ save()
 }
 
 // SAVE SCORE + HISTORY
-function saveScore(){
-
-let A=parseInt(scoreAEl.value)
-let B=parseInt(scoreBEl.value)
-
-if(isNaN(A)||isNaN(B)) return
-
-let [a,b,c,d]=currentMatch
-if(!a||!b||!c||!d) return
-
-// score
-pf[a]+=A; pf[b]+=A
-pa[a]+=B; pa[b]+=B
-pf[c]+=B; pf[d]+=B
-pa[c]+=A; pa[d]+=A
-
-if(A>B){wins[a]++;wins[b]++}
-else if(B>A){wins[c]++;wins[d]++}
-
-// history
-history.push({
-round: round,
-teamA: [a,b],
-teamB: [c,d],
-scoreA: A,
-scoreB: B
-})
-
-scoreAEl.value=""
-scoreBEl.value=""
-
-updateRank()
-updateHistory()
-save()
-}
 
 // UI
 function updateUI(){
