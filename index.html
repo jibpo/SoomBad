@@ -73,7 +73,8 @@ border-radius:10px;
 <textarea id="players" placeholder="ใส่ชื่อ (บรรทัดละ 1 คน)"></textarea>
 
 <button onclick="startGame()">เริ่มใหม่</button>
-<button onclick="nextRound()">สุ่มรอบ</button>
+<button onclick="nextRound()">สุ่มรอบถัดไป</button>
+<button onclick="resetAll()">รีเซ็ตทั้งหมด</button>
 </div>
 
 <div class="card">
@@ -209,6 +210,11 @@ save()
 
 function openScoreboard(){
 window.open("scoreboard.html","_blank")
+}
+
+function resetAll(){
+localStorage.removeItem("bad_full")
+location.reload()
 }
 
 function updateUI(){
