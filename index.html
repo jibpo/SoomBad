@@ -64,57 +64,6 @@ margin-top:6px;
 background:#f9fafb;
 border-radius:10px;
 }
-/* 🏆 ตารางคะแนน */
-.rank{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:12px;
-margin-top:8px;
-background:white;
-border-radius:12px;
-border:1px solid #e5e7eb;
-}
-
-.rank-left{
-font-weight:600;
-font-size:16px;
-}
-
-.rank-right{
-font-size:14px;
-color:#6b7280;
-}
-
-/* 🥇 Top 3 */
-.rank.top1{ background:#fef9c3; }
-.rank.top2{ background:#e5e7eb; }
-.rank.top3{ background:#fde68a; }
-
-/* 📜 history */
-.history-card{
-background:white;
-border-radius:12px;
-padding:12px;
-margin-top:10px;
-border:1px solid #e5e7eb;
-}
-
-.history-round{
-font-size:13px;
-color:#9ca3af;
-margin-bottom:6px;
-}
-
-.history-team{
-font-weight:600;
-}
-
-.history-score{
-font-size:18px;
-font-weight:bold;
-text-align:right;
-}
 </style>
 </head>
 
@@ -280,58 +229,32 @@ teamBEl.innerHTML=currentMatch[2]+"<br>"+currentMatch[3]
 }
 
 function updateRank(){
-
 let sorted=[...players].sort((a,b)=>{
 if(wins[b]!=wins[a]) return wins[b]-wins[a]
 return (pf[b]-pa[b])-(pf[a]-pa[a])
 })
 
-rankingEl.innerHTML=sorted.map((p,i)=>{
-
-let cls = "rank"
-if(i===0) cls+=" top1"
-if(i===1) cls+=" top2"
-if(i===2) cls+=" top3"
-
-return `
-<div class="${cls}">
-<div class="rank-left">#${i+1} ${p}</div>
-<div class="rank-right">
-🏆 ${wins[p]}<br>
-🎮 ${played[p]}
+rankingEl.innerHTML=sorted.map((p,i)=>`
+<div class="rank">
+<span>#${i+1} ${p}</span>
+<span>🏆${wins[p]} | 🎮${played[p]}</span>
 </div>
-</div>
-`
-}).join("")
+`).join("")
 }
 
 function updateHistory(){
-function updateHistory(){
-
 historyEl.innerHTML = history.map(h=>`
-
-<div class="history-card">
-
-<div class="history-round">
-รอบ ${h.round}
-</div>
-
-<div class="history-team">
-${h.teamA[0]} & ${h.teamA[1]}
-</div>
-
-<div style="text-align:center; margin:6px 0;">vs</div>
-
-<div class="history-team">
+<div class="rank">
+<div>
+รอบ ${h.round}<br>
+${h.teamA[0]} & ${h.teamA[1]}<br>
+vs<br>
 ${h.teamB[0]} & ${h.teamB[1]}
 </div>
-
-<div class="history-score">
+<div>
 ${h.scoreA} - ${h.scoreB}
 </div>
-
 </div>
-
 `).reverse().join("")
 }
 
