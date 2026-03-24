@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Display</title>
+
+<style>
+body{
+margin:0;
+background:black;
+color:white;
+font-family:-apple-system;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+height:100vh;
+text-align:center;
+}
+
+.round{
+font-size:40px;
+opacity:0.7;
+margin-bottom:20px;
+}
+
+.team{
+font-size:60px;
+font-weight:bold;
+margin:20px 0;
+}
+
+.vs{
+font-size:40px;
+opacity:0.5;
+margin:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="round" id="round"></div>
+
+<div class="team" id="teamA"></div>
+
+<div class="vs">VS</div>
+
+<div class="team" id="teamB"></div>
+
+<script>
+
+function loadDisplay(){
+
+let d = JSON.parse(localStorage.getItem("bad_full") || "null")
+
+if(!d) return
+
+document.getElementById("round").innerText = "รอบที่ " + d.round
+
+let match = d.currentMatch || []
+
+if(match.length === 4){
+document.getElementById("teamA").innerHTML = match[0] + "<br>" + match[1]
+document.getElementById("teamB").innerHTML = match[2] + "<br>" + match[3]
+}
+}
+
+loadDisplay()
+
+setInterval(loadDisplay,2000)
+
+</script>
+
+</body>
+</html>
