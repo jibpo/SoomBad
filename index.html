@@ -16,8 +16,26 @@ button{width:100%;padding:14px;margin-top:10px;font-size:18px;border:none;border
 .reset{background:#ef4444;}
 .big{font-size:30px;text-align:center;margin:10px 0;}
 .vs{text-align:center;margin:10px 0;}
-.score{display:flex;gap:10px;}
-.score input{flex:1;font-size:20px;padding:10px;border-radius:10px;border:none;text-align:center;}
+.score{
+display:flex;
+gap:10px;
+width:100%;
+}
+.score input{
+flex:1;
+min-width:0;        /* 🔥 สำคัญมาก */
+width:100%;
+font-size:18px;
+padding:10px;
+border-radius:10px;
+border:none;
+text-align:center;
+box-sizing:border-box;
+}
+.score input::placeholder{
+font-size:14px;
+opacity:0.6;
+}
 .rank{display:flex;justify-content:space-between;padding:8px;margin-top:6px;background:#334155;border-radius:10px;}
 </style>
 </head>
