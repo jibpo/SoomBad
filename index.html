@@ -631,10 +631,29 @@ document.addEventListener("touchend", e => {
   handleSwipe()
 })
 
+// 👉 SWIPE TAB (แก้แล้ว)
+let startX = 0
+let endX = 0
+
+const swipeArea = document.body
+
+swipeArea.addEventListener("touchstart", e => {
+  // ❌ ถ้าแตะ tabbar → ไม่ทำ swipe
+  if(e.target.closest('.tabbar')) return
+
+  startX = e.changedTouches[0].screenX
+})
+
+swipeArea.addEventListener("touchend", e => {
+  if(e.target.closest('.tabbar')) return
+
+  endX = e.changedTouches[0].screenX
+  handleSwipe()
+})
+
 function handleSwipe(){
   const diff = startX - endX
 
-  // 👇 ปัดแรงพอค่อยเปลี่ยน
   if(Math.abs(diff) < 50) return
 
   const tabs = ["homeTab","rankTab","historyTab"]
@@ -642,16 +661,16 @@ function handleSwipe(){
   let index = tabs.indexOf(current)
 
   if(diff > 0){
-    // 👉 ปัดซ้าย
-    if(index < tabs.length - 1){
-      index++
-    }
+    if(index < tabs.length - 1) index++
   }else{
-    // 👉 ปัดขวา
-    if(index > 0){
-      index--
-    }
+    if(index > 0) index--
   }
+
+  const nextTab = tabs[index]
+  const nextEl = document.querySelectorAll('.tabbar span')[index]
+
+  switchTab(nextTab, nextEl)
+}
 
   const nextTab = tabs[index]
   const nextEl = document.querySelector(`.tabbar span:nth-child(${index+2})`)
