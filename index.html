@@ -329,6 +329,11 @@ padding-bottom: 180px;
 margin-bottom:20px;
 }
 
+.tabbar span{
+position:relative;
+z-index:1;
+}
+
 .indicator{
 position:absolute;
 bottom:6px;
@@ -338,6 +343,8 @@ background:#000;
 border-radius:10px;
 transition:0.3s;
 left:12%;
+pointer-events:none;
+z-index:0;
 }
 
 </style>
@@ -603,7 +610,8 @@ const indicator = document.querySelector('.indicator')
 const tabs = document.querySelectorAll('.tabbar span')
 const index = Array.from(tabs).indexOf(el)
 
-indicator.style.left = (index * 33.3 + 12) + "%"
+if(indicator){
+  indicator.style.left = (index * 33.3 + 12) + "%"
 }
        
 </script>
