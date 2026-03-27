@@ -3,23 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
 <title>Badminton Match</title>
 
 <style>
 body{
 margin:0;
-font-family:-apple-system, BlinkMacSystemFont;
-background: linear-gradient(135deg,#d4ff00,#b8ff2e);
+font-family:'Fredoka', sans-serif;
+background:#00d4ff; /* ฟ้าสด */
 padding:16px;
 }
 
 /* HEADER */
 .header{
-background:white;
+background:#ffef00;
+color:#000;
+
+border:3px solid #000;
+border-radius:16px;
 padding:20px;
-border-radius:24px;
-margin-bottom:16px;
-box-shadow:0 10px 30px rgba(0,0,0,0.08);
+
+box-shadow:6px 6px 0px #000;
 }
 
 .title{
@@ -35,12 +39,13 @@ margin-top:4px;
 
 /* CARD */
 .card{
-background:white;
-border-radius:24px;
+background:#fff;
+border:3px solid #000;
+border-radius:16px;
 padding:16px;
 margin-bottom:16px;
-box-shadow:0 12px 30px rgba(0,0,0,0.08);
-animation:fadeUp 0.4s ease;
+
+box-shadow:6px 6px 0px #000; /* เงาแข็ง */
 }
 
 /* TEXTAREA */
@@ -59,20 +64,26 @@ font-size:14px;
 width:100%;
 padding:14px;
 margin-top:10px;
-border:none;
-border-radius:16px;
-font-weight:700;
+
+border:3px solid #000;
+border-radius:14px;
+
+font-weight:800;
 cursor:pointer;
-transition:0.2s;
+
+box-shadow:4px 4px 0 #000;
+transition:0.1s;
 }
 
-.btn:hover{
-transform:scale(1.03);
-}
-       
 .btn:active{
-transform:scale(0.97);
+transform:translate(4px,4px);
+box-shadow:0 0 0 #000;
 }
+
+/* สีปุ่ม */
+.primary{ background:#ff4d4d; }
+.neon{ background:#00ff88; }
+.danger{ background:#ff6b00; }
 
 .primary{ background:#111; color:white; }
 .neon{ background:#d4ff00; }
@@ -80,6 +91,11 @@ transform:scale(0.97);
 
 /* MATCH */
 .match-card{
+background:#fff;
+border:3px solid #000;
+border-radius:16px;
+
+box-shadow:6px 6px 0 #000;
 text-align:center;
 }
 
@@ -118,18 +134,21 @@ width:100%;
 
 /* RANK */
 .rank{
-background:white;
-border-radius:16px;
-padding:14px;
+background:#fff;
+border:3px solid #000;
+border-radius:14px;
+padding:12px;
 margin-top:10px;
+
 display:flex;
 justify-content:space-between;
-box-shadow:0 6px 14px rgba(0,0,0,0.06);
+
+box-shadow:4px 4px 0 #000;
 }
 
-.rank.top1{ background:#d4ff00; }
-.rank.top2{ background:#f3f4f6; }
-.rank.top3{ background:#ffe4b5; }
+.rank.top1{ background:#00ff88; }
+.rank.top2{ background:#fff200; }
+.rank.top3{ background:#ffb347; }
 
 /* HISTORY */
 .history-card{
@@ -161,21 +180,27 @@ bottom:16px;
 left:50%;
 transform:translateX(-50%);
 width:92%;
-max-width:420px;
 
-background:rgba(255,255,255,0.7);
-backdrop-filter: blur(16px);
-
-border-radius:24px;
-padding:10px 6px;
+background:#fff;
+border:3px solid #000;
+border-radius:20px;
 
 display:flex;
 justify-content:space-around;
-align-items:center;
+padding:10px;
 
-box-shadow:
-0 10px 30px rgba(0,0,0,0.12),
-inset 0 1px rgba(255,255,255,0.6);
+box-shadow:6px 6px 0 #000;
+}
+
+.tabbar span{
+font-size:20px;
+padding:10px;
+border-radius:10px;
+}
+
+.tabbar span.active{
+background:#00ff88;
+border:2px solid #000;
 }
 
 /* TAB SYSTEM */
