@@ -303,11 +303,6 @@ flex-direction:column;
 gap:6px;
 }
 
-.win{
-color:#16a34a;
-font-weight:800;
-}
-
 </style>
 </head>
 
@@ -551,6 +546,20 @@ return `
     <span class="vs">vs</span> 
     ${h.teamB[0]} & ${h.teamB[1]}
   </div>
+
+<div class="history-score">
+  <span class="${h.scoreA > h.scoreB ? 'win' : ''}">
+    ${h.scoreA}
+  </span>
+  -
+  <span class="${h.scoreB > h.scoreA ? 'win' : ''}">
+    ${h.scoreB}
+  </span>
+</div>
+
+</div>
+
+</div>
 
 <div class="history-score">
 <span class="${h.scoreA > h.scoreB ? 'win' : 'lose'}">
