@@ -220,11 +220,14 @@ display:block;
 
 /* TABBAR */
 .tabbar{
-position:sticky;
-bottom:0;
+position:fixed;
+bottom:80px; /* 👈 ดันขึ้นเหนือ browser bar */
 
-width:100%;
-margin-top:20px;
+left:50%;
+transform:translateX(-50%);
+
+width:90%;
+max-width:400px;
 
 background:#fff;
 border:3px solid #000;
@@ -237,6 +240,7 @@ align-items:center;
 padding:10px;
 
 box-shadow:6px 6px 0 #000;
+z-index:999;
 }
 
 .tabbar{
@@ -312,7 +316,7 @@ font-weight:800;
 }
 
 body{
-padding-bottom: 140px;
+padding-bottom:180px; /* 👈 เพิ่มพื้นที่ด้านล่าง */
 }
 
 </style>
