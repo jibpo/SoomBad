@@ -228,11 +228,13 @@ display:block;
 
 /* TABBAR */
 .tabbar{
-position:sticky;
-bottom:0;
+position:fixed;
+bottom:16px;
+left:50%;
+transform:translateX(-50%);
 
-margin-top:20px;
-width:100%;
+width:90%;
+max-width:400px;
 
 background:#fff;
 border:3px solid #000;
@@ -242,7 +244,8 @@ display:flex;
 justify-content:space-around;
 padding:10px;
 
-box-shadow:5px 5px 0 #000;
+box-shadow:6px 6px 0 #000;
+z-index:999;
 }
 
 .tabbar span{
@@ -384,10 +387,6 @@ font-weight:800;
   <span onclick="switchTab('rankTab',this)">🏆</span>
   <span onclick="switchTab('historyTab',this)">📜</span>
 </div>
-
-body{
-padding-bottom:90px;
-}
 
 </body>
 
