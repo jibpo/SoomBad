@@ -224,6 +224,19 @@ position:sticky;
 bottom:0;
 
 width:100%;
+margin-top:20px;
+
+background:#fff;
+border:3px solid #000;
+border-radius:20px;
+
+display:flex;
+justify-content:space-around;
+align-items:center;
+
+padding:10px;
+
+box-shadow:6px 6px 0 #000;
 }
 
 .tabbar{
@@ -233,17 +246,13 @@ bottom: 70px;
 .tabbar span{
 width:44px;
 height:44px;
+
 display:flex;
 align-items:center;
 justify-content:center;
 
-border-radius:12px;
 font-size:20px;
-
-transition:0.25s;
-cursor:pointer;
-
-color:#666;
+border-radius:12px;
 }
 
 .tabbar span.active{
@@ -256,6 +265,11 @@ box-shadow:0 6px 14px rgba(0,0,0,0.15);
 
 .tabbar span:active{
 transform:scale(0.9);
+}
+
+.tabbar span.active{
+background:#d4ff00;
+border:2px solid #000;
 }
 
 .tab{
