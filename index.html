@@ -274,6 +274,14 @@ background:#d4ff00;
 border:2px solid #000;
 }
 
+.tabbar span{
+transition:0.2s;
+}
+
+.tabbar span.active{
+transform:translateY(-6px) scale(1.1);
+}
+
 .tab{
 display:none;
 opacity:0;
@@ -319,6 +327,17 @@ padding-bottom: 180px;
 
 .start{
 margin-bottom:20px;
+}
+
+.indicator{
+position:absolute;
+bottom:6px;
+width:30px;
+height:4px;
+background:#000;
+border-radius:10px;
+transition:0.3s;
+left:12%;
 }
 
 </style>
@@ -482,7 +501,9 @@ consecutive[p]=0
 updateUI()
 updateRank()
 save()
-}
+document.querySelector('.match-card').scrollIntoView({
+  behavior:'smooth'
+})
 
 function openScoreboard(){
 window.open("scoreboard.html","_blank")
@@ -587,6 +608,7 @@ indicator.style.left = (index * 33.3 + 12) + "%"
 </script>
 
 <div class="tabbar">
+  <div class="indicator"></div>
   <span onclick="switchTab('homeTab',this)" class="active">🏠</span>
   <span onclick="switchTab('rankTab',this)">🏆</span>
   <span onclick="switchTab('historyTab',this)">📜</span>
