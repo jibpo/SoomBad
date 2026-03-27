@@ -544,23 +544,25 @@ historyEl.innerHTML = history.map(h=>{
 return `
 <div class="history-card">
 
-<div class="history-row">
+  <div class="history-row">
 
-  <div class="teams-text">
-    ${h.teamA[0]} & ${h.teamA[1]} 
-    <span class="vs">vs</span> 
-    ${h.teamB[0]} & ${h.teamB[1]}
+    <div class="teams-text">
+      ${h.teamA[0]} & ${h.teamA[1]} 
+      <span class="vs">vs</span> 
+      ${h.teamB[0]} & ${h.teamB[1]}
+    </div>
+
+    <div class="history-score">
+      <span class="${h.scoreA > h.scoreB ? 'win' : ''}">
+        ${h.scoreA}
+      </span>
+      -
+      <span class="${h.scoreB > h.scoreA ? 'win' : ''}">
+        ${h.scoreB}
+      </span>
+    </div>
+
   </div>
-
-<div class="history-score">
-  <span class="${h.scoreA > h.scoreB ? 'win' : ''}">
-    ${h.scoreA}
-  </span>
-  -
-  <span class="${h.scoreB > h.scoreA ? 'win' : ''}">
-    ${h.scoreB}
-  </span>
-</div>
 
 </div>
 `
