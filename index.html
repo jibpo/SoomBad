@@ -189,24 +189,6 @@ font-weight:700;
 color:#9ca3af;
 }
 
-.tabbar{
-position:fixed;
-bottom:0;
-left:0;
-
-width:100%;
-
-background:#fff;
-border-top:3px solid #000;
-
-display:flex;
-justify-content:space-around;
-padding:12px 0;
-
-box-shadow:0 -4px 0 #000;
-z-index:999;
-}
-
 .tabbar span{
 font-size:20px;
 padding:10px;
@@ -317,19 +299,18 @@ font-weight:800;
 }
 
 body{
-  padding-bottom:90px;
+padding-bottom:130px;
 }
 
 </style>
 </head>
 
 <div class="tabbar">
-  <span>🏠</span>
-  <span>🎯</span>
-  <span>🏆</span>
-  <span>👤</span>
+  <span onclick="switchTab('homeTab',this)" class="active">🏠</span>
+  <span onclick="switchTab('rankTab',this)">🏆</span>
+  <span onclick="switchTab('historyTab',this)">📜</span>
 </div>
-
+  
 <body>
 
 <!-- HEADER -->
@@ -388,6 +369,12 @@ body{
 
 <div class="tabbar">
   <div class="indicator"></div>
+  <span onclick="switchTab('homeTab',this)" class="active">🏠</span>
+  <span onclick="switchTab('rankTab',this)">🏆</span>
+  <span onclick="switchTab('historyTab',this)">📜</span>
+</div>
+
+<div class="tabbar">
   <span onclick="switchTab('homeTab',this)" class="active">🏠</span>
   <span onclick="switchTab('rankTab',this)">🏆</span>
   <span onclick="switchTab('historyTab',this)">📜</span>
