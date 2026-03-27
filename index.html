@@ -221,22 +221,27 @@ display:block;
 /* TABBAR */
 .tabbar{
 position:fixed;
-bottom:0; /* 👈 ติดขอบล่างจริง */
 
-left:0;
-width:100%;
+/* 👇 ค่าที่บาลานซ์สุด */
+bottom: 80px;
+
+left:50%;
+transform:translateX(-50%);
+
+width:90%;
+max-width:420px;
 
 background:#fff;
-border-top:3px solid #000; /* เปลี่ยนเป็นขอบบนแทน */
-border-radius:0; /* ไม่โค้ง จะเนียนกว่า */
+border:3px solid #000;
+border-radius:20px;
 
 display:flex;
 justify-content:space-around;
 align-items:center;
 
-padding:10px 0 calc(10px + env(safe-area-inset-bottom));
+padding:10px;
 
-box-shadow:0 -4px 0 #000; /* เงาด้านบนแทน */
+box-shadow:6px 6px 0 #000;
 z-index:999;
 }
 
@@ -309,7 +314,7 @@ font-weight:800;
 }
 
 body{
-padding-bottom: calc(100px + env(safe-area-inset-bottom));
+padding-bottom: 180px;
 }
 
 .start{
