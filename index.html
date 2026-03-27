@@ -221,13 +221,15 @@ display:block;
 /* TABBAR */
 .tabbar{
 position:fixed;
-bottom:80px; /* 👈 ดันขึ้นเหนือ browser bar */
+
+/* 👇 หัวใจสำคัญ */
+bottom: calc(70px + env(safe-area-inset-bottom));
 
 left:50%;
 transform:translateX(-50%);
 
 width:90%;
-max-width:400px;
+max-width:420px;
 
 background:#fff;
 border:3px solid #000;
@@ -316,7 +318,11 @@ font-weight:800;
 }
 
 body{
-padding-bottom:180px; /* 👈 เพิ่มพื้นที่ด้านล่าง */
+padding-bottom: calc(200px + env(safe-area-inset-bottom));
+}
+
+.start{
+margin-bottom:20px;
 }
 
 </style>
