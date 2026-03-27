@@ -231,6 +231,10 @@ box-shadow:6px 6px 0 #000;
 z-index:999;
 }
 
+.tabbar{
+bottom: calc(10px + env(safe-area-inset-bottom));
+}
+
 .tabbar span{
 width:44px;
 height:44px;
@@ -299,7 +303,7 @@ font-weight:800;
 }
 
 body{
-padding-bottom:130px;
+padding-bottom: calc(160px + env(safe-area-inset-bottom));
 }
 
 </style>
