@@ -9,158 +9,225 @@
 body{
 margin:0;
 font-family:-apple-system, BlinkMacSystemFont;
-background:#e5e7eb;
+background: linear-gradient(135deg,#d4ff00,#b8ff2e);
 padding:16px;
 }
 
-/* header */
+/* HEADER */
 .header{
-background:#1e3a8a;
-color:white;
+background:white;
 padding:20px;
-border-radius:20px;
+border-radius:24px;
 margin-bottom:16px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
 }
 
-/* container card */
+.title{
+font-size:20px;
+font-weight:800;
+}
+
+.subtitle{
+font-size:13px;
+color:#666;
+margin-top:4px;
+}
+
+/* CARD */
 .card{
 background:white;
-border-radius:20px;
-padding:14px;
-margin-bottom:12px;
-box-shadow:0 6px 16px rgba(0,0,0,0.08);
+border-radius:24px;
+padding:16px;
+margin-bottom:16px;
+box-shadow:0 12px 30px rgba(0,0,0,0.08);
+animation:fadeUp 0.4s ease;
 }
 
-/* textarea */
+/* TEXTAREA */
 textarea{
 width:100%;
 height:100px;
-border-radius:14px;
-padding:10px;
+border-radius:16px;
+padding:12px;
 border:none;
 background:#f3f4f6;
+font-size:14px;
 }
 
-/* buttons */
-button{
+/* BUTTON */
+.btn{
 width:100%;
-padding:12px;
-margin-top:8px;
-border:none;
-border-radius:14px;
-font-weight:600;
-}
-
-button:nth-child(2){ background:#1e3a8a; color:white; }
-button:nth-child(3){ background:#22c55e; color:white; }
-button:nth-child(4){ background:#ef4444; color:white; }
-
-/* match */
-.match{
-background:#dbeafe;
-border-radius:18px;
-padding:12px;
-text-align:center;
+padding:14px;
 margin-top:10px;
+border:none;
+border-radius:16px;
+font-weight:700;
+cursor:pointer;
+transition:0.2s;
 }
 
-.big{
-font-size:22px;
-font-weight:700;
-margin:6px 0;
+.btn:hover{
+transform:scale(1.03);
+}
+       
+.btn:active{
+transform:scale(0.97);
+}
+
+.primary{ background:#111; color:white; }
+.neon{ background:#d4ff00; }
+.danger{ background:#ef4444; color:white; }
+
+/* MATCH */
+.match-card{
+text-align:center;
+}
+
+.round{
+font-weight:600;
+color:#666;
+}
+
+.teams{
+margin:12px 0;
+}
+
+.team{
+font-size:20px;
+font-weight:800;
 }
 
 .vs{
-color:#64748b;
+margin:8px 0;
+color:#999;
 }
 
-/* scoreboard btn */
+.team{
+line-height:1.6;
+}
+
+/* START BTN */
 .start{
-background:#1e3a8a;
-color:white;
+background:#d4ff00;
+border:none;
+padding:14px;
 border-radius:20px;
-padding:12px;
-margin-top:10px;
+font-weight:800;
+width:100%;
 }
 
-/* ranking cards */
+/* RANK */
 .rank{
-background:#f3f4f6;
-border-radius:18px;
-padding:12px;
+background:white;
+border-radius:16px;
+padding:14px;
 margin-top:10px;
 display:flex;
 justify-content:space-between;
-align-items:center;
+box-shadow:0 6px 14px rgba(0,0,0,0.06);
 }
 
-.rank.top1{ background:#fde68a; }
-.rank.top2{ background:#e5e7eb; }
-.rank.top3{ background:#fed7aa; }
+.rank.top1{ background:#d4ff00; }
+.rank.top2{ background:#f3f4f6; }
+.rank.top3{ background:#ffe4b5; }
 
-/* history */
+/* HISTORY */
 .history-card{
-background:#f9fafb;
-border-radius:18px;
-padding:12px;
+background:white;
+border-radius:16px;
+padding:14px;
 margin-top:10px;
+box-shadow:0 6px 14px rgba(0,0,0,0.05);
 }
 
-.history-score{
-font-weight:bold;
-text-align:right;
-margin-top:6px;
+/* ANIMATION */
+@keyframes fadeUp{
+from{opacity:0; transform:translateY(20px);}
+to{opacity:1; transform:translateY(0);}
 }
 
-.win{ color:#16a34a; }
-.lose{ color:#9ca3af; }
+.win{
+color:#16a34a;
+font-weight:700;
+}
+
+.lose{
+color:#9ca3af;
+}
+
+.tabbar{
+position:fixed;
+bottom:10px;
+left:50%;
+transform:translateX(-50%);
+width:90%;
+background:white;
+border-radius:20px;
+display:flex;
+justify-content:space-around;
+padding:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
+}
+       
 </style>
 </head>
 
+<div class="tabbar">
+  <span>🏠</span>
+  <span>🎯</span>
+  <span>🏆</span>
+  <span>👤</span>
+</div>
+
 <body>
+
+<!-- HEADER -->
 <div class="header">
-<h2 style="margin:0;">What’s new?</h2>
-<div style="font-size:13px; opacity:0.8;">Badminton Match</div>
+  <div class="title">🏸 Badminton Match</div>
+  <div class="subtitle">จัดคู่ & แข่งแบบอัตโนมัติ</div>
 </div>
+
+<!-- INPUT -->
 <div class="card">
+  <textarea id="players" placeholder="ใส่ชื่อ (ขึ้นบรรทัดใหม่)"></textarea>
 
-<textarea id="players" placeholder="ใส่ชื่อ"></textarea>
-
-<button onclick="startGame()">เริ่มใหม่</button>
-<button onclick="nextRound()">สุ่มรอบ</button>
-<button onclick="resetAll()">รีเซ็ต</button>
-
-<div class="match">
-<div id="round">รอบที่ 0</div>
-
-<div class="big" id="teamA">-</div>
-<div class="vs">VS</div>
-<div class="big" id="teamB">-</div>
+  <button class="btn primary" onclick="startGame()">เริ่มใหม่</button>
+  <button class="btn neon" onclick="nextRound()">สุ่มรอบ</button>
+  <button class="btn danger" onclick="resetAll()">รีเซ็ต</button>
 </div>
 
-<button class="start" onclick="openScoreboard()">เริ่มแข่ง</button>
+<!-- MATCH -->
+<div class="card match-card">
+  <div id="round" class="round">รอบที่ 0</div>
 
+  <div class="teams">
+    <div class="team" id="teamA">-</div>
+    <div class="vs">VS</div>
+    <div class="team" id="teamB">-</div>
+  </div>
+
+  <button class="start" onclick="openScoreboard()">เริ่มแข่ง</button>
 </div>
 
-<div class="card" style="background:#eff6ff;">
-<div id="round">รอบที่ 0</div>
-
-<div class="big" id="teamA">-</div>
-<div class="vs">VS</div>
-<div class="big" id="teamB">-</div>
-
-<button onclick="openScoreboard()">เริ่มแข่ง</button>
-</div>
-
+<!-- RANK -->
 <div class="card">
-<h3>🏆 ตารางคะแนน</h3>
-<div id="ranking"></div>
+  <h3>🏆 ตารางคะแนน</h3>
+  <div id="ranking"></div>
 </div>
 
+<!-- HISTORY -->
 <div class="card">
-<h3>📜 ประวัติการแข่งขัน</h3>
-<div id="history"></div>
+  <h3>📜 ประวัติการแข่งขัน</h3>
+  <div id="history"></div>
 </div>
+
+<div class="tabbar">
+  <span>🏠</span>
+  <span>🎯</span>
+  <span>🏆</span>
+  <span>👤</span>
+</div>
+</body>
 
 <script>
 
@@ -334,9 +401,13 @@ ${h.teamB[0]} & ${h.teamB[1]}
 </div>
 
 <div class="history-score">
-${h.scoreA} - ${h.scoreB}
-</div>
-
+<span class="${h.scoreA > h.scoreB ? 'win' : 'lose'}">
+${h.scoreA}
+</span>
+-
+<span class="${h.scoreB > h.scoreA ? 'win' : 'lose'}">
+${h.scoreB}
+</span>
 </div>
 `
 
