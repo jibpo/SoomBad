@@ -168,7 +168,54 @@ justify-content:space-around;
 padding:12px;
 box-shadow:0 10px 25px rgba(0,0,0,0.1);
 }
-       
+
+/* TAB SYSTEM */
+.tab{
+display:none;
+}
+
+.tab.active{
+display:block;
+}
+
+/* TABBAR */
+.tabbar{
+position:fixed;
+bottom:10px;
+left:50%;
+transform:translateX(-50%);
+width:90%;
+background:white;
+border-radius:20px;
+display:flex;
+justify-content:space-around;
+padding:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
+}
+
+.tabbar span{
+cursor:pointer;
+font-size:18px;
+opacity:0.5;
+}
+
+.tabbar span.active{
+opacity:1;
+}
+
+.tab{
+display:none;
+opacity:0;
+transform:translateY(10px);
+transition:0.25s;
+}
+
+.tab.active{
+display:block;
+opacity:1;
+transform:translateY(0);
+}
+
 </style>
 </head>
 
@@ -187,38 +234,45 @@ box-shadow:0 10px 25px rgba(0,0,0,0.1);
   <div class="subtitle">จัดคู่ & แข่งแบบอัตโนมัติ</div>
 </div>
 
-<!-- INPUT -->
-<div class="card">
-  <textarea id="players" placeholder="ใส่ชื่อ (ขึ้นบรรทัดใหม่)"></textarea>
+<!-- HOME TAB -->
+<div id="homeTab" class="tab active">
 
-  <button class="btn primary" onclick="startGame()">เริ่มใหม่</button>
-  <button class="btn neon" onclick="nextRound()">สุ่มรอบ</button>
-  <button class="btn danger" onclick="resetAll()">รีเซ็ต</button>
-</div>
+  <div class="card">
+    <textarea id="players" placeholder="ใส่ชื่อ"></textarea>
 
-<!-- MATCH -->
-<div class="card match-card">
-  <div id="round" class="round">รอบที่ 0</div>
-
-  <div class="teams">
-    <div class="team" id="teamA">-</div>
-    <div class="vs">VS</div>
-    <div class="team" id="teamB">-</div>
+    <button class="btn primary" onclick="startGame()">เริ่มใหม่</button>
+    <button class="btn neon" onclick="nextRound()">สุ่มรอบ</button>
+    <button class="btn danger" onclick="resetAll()">รีเซ็ต</button>
   </div>
 
-  <button class="start" onclick="openScoreboard()">เริ่มแข่ง</button>
+  <div class="card match-card">
+    <div id="round" class="round">รอบที่ 0</div>
+
+    <div class="teams">
+      <div class="team" id="teamA">-</div>
+      <div class="vs">VS</div>
+      <div class="team" id="teamB">-</div>
+    </div>
+
+    <button class="start" onclick="openScoreboard()">เริ่มแข่ง</button>
+  </div>
+
 </div>
 
-<!-- RANK -->
-<div class="card">
-  <h3>🏆 ตารางคะแนน</h3>
-  <div id="ranking"></div>
+<!-- RANK TAB -->
+<div id="rankTab" class="tab">
+  <div class="card">
+    <h3>🏆 ตารางคะแนน</h3>
+    <div id="ranking"></div>
+  </div>
 </div>
 
-<!-- HISTORY -->
-<div class="card">
-  <h3>📜 ประวัติการแข่งขัน</h3>
-  <div id="history"></div>
+<!-- HISTORY TAB -->
+<div id="historyTab" class="tab">
+  <div class="card">
+    <h3>📜 ประวัติการแข่งขัน</h3>
+    <div id="history"></div>
+  </div>
 </div>
 
 <div class="tabbar">
@@ -227,6 +281,13 @@ box-shadow:0 10px 25px rgba(0,0,0,0.1);
   <span>🏆</span>
   <span>👤</span>
 </div>
+
+<div class="tabbar">
+  <span onclick="switchTab('homeTab',this)" class="active">🏠</span>
+  <span onclick="switchTab('rankTab',this)">🏆</span>
+  <span onclick="switchTab('historyTab',this)">📜</span>
+</div>
+       
 </body>
 
 <script>
@@ -413,6 +474,26 @@ ${h.scoreB}
 
 }).reverse().join("")
 }
+
+function switchTab(tabId, el){
+
+// ซ่อนทุก tab
+document.querySelectorAll('.tab').forEach(t=>{
+  t.classList.remove('active')
+})
+
+// แสดง tab ที่กด
+document.getElementById(tabId).classList.add('active')
+
+// reset icon
+document.querySelectorAll('.tabbar span').forEach(i=>{
+  i.classList.remove('active')
+})
+
+// highlight icon ที่กด
+el.classList.add('active')
+}
+       
 </script>
 
 </body>
