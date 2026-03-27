@@ -222,8 +222,8 @@ display:block;
 .tabbar{
 position:fixed;
 
-/* 👇 ค่าที่บาลานซ์สุด */
-bottom: 70px;
+/* 👇 ใช้ safe-area จริง */
+bottom: calc(10px + env(safe-area-inset-bottom));
 
 left:50%;
 transform:translateX(-50%);
@@ -322,11 +322,11 @@ font-weight:800;
 }
 
 body{
-padding-bottom: 180px;
+padding-bottom: calc(110px + env(safe-area-inset-bottom));
 }
 
 .start{
-margin-bottom:20px;
+margin-bottom:30px;
 }
 
 .tabbar span{
