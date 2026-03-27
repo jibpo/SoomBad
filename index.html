@@ -282,6 +282,27 @@ opacity:1;
 transform:translateY(0);
 }
 
+.history-row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+}
+
+.teams-text{
+font-weight:600;
+}
+
+.history-score{
+font-weight:800;
+}
+
+.history-card{
+display:flex;
+flex-direction:column;
+gap:6px;
+}
+
 </style>
 </head>
 
@@ -518,14 +539,20 @@ historyEl.innerHTML = history.map(h=>{
 return `
 <div class="history-card">
 
-<div>
-${h.teamA[0]} & ${h.teamA[1]}
+<div class="history-row">
+
+  <div class="teams-text">
+    ${h.teamA[0]} & ${h.teamA[1]} 
+    <span class="vs">vs</span> 
+    ${h.teamB[0]} & ${h.teamB[1]}
+  </div>
+
+  <div class="history-score">
+    ${h.scoreA} - ${h.scoreB}
+  </div>
+
 </div>
 
-<div style="text-align:center;">vs</div>
-
-<div>
-${h.teamB[0]} & ${h.teamB[1]}
 </div>
 
 <div class="history-score">
