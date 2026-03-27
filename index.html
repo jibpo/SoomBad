@@ -347,6 +347,10 @@ pointer-events:none;
 z-index:0;
 }
 
+body{
+touch-action: pan-y;
+}
+
 </style>
 </head>
 
@@ -613,7 +617,48 @@ const index = Array.from(tabs).indexOf(el)
 if(indicator){
   indicator.style.left = (index * 33.3 + 12) + "%"
 }
-       
+
+// 👉 SWIPE TAB
+let startX = 0
+let endX = 0
+
+document.addEventListener("touchstart", e => {
+  startX = e.changedTouches[0].screenX
+})
+
+document.addEventListener("touchend", e => {
+  endX = e.changedTouches[0].screenX
+  handleSwipe()
+})
+
+function handleSwipe(){
+  const diff = startX - endX
+
+  // 👇 ปัดแรงพอค่อยเปลี่ยน
+  if(Math.abs(diff) < 50) return
+
+  const tabs = ["homeTab","rankTab","historyTab"]
+  const current = document.querySelector('.tab.active').id
+  let index = tabs.indexOf(current)
+
+  if(diff > 0){
+    // 👉 ปัดซ้าย
+    if(index < tabs.length - 1){
+      index++
+    }
+  }else{
+    // 👉 ปัดขวา
+    if(index > 0){
+      index--
+    }
+  }
+
+  const nextTab = tabs[index]
+  const nextEl = document.querySelector(`.tabbar span:nth-child(${index+2})`)
+
+  switchTab(nextTab, nextEl)
+}
+
 </script>
 
 <div class="tabbar">
